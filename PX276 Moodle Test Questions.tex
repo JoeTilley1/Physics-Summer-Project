@@ -1,0 +1,1117 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{listings}
+\usepackage{fullpage}
+\title{PX276 Moodle Test Questions}
+\author{Joe Tilley}
+\begin{document}
+\maketitle
+\section{Test 1}
+\subsection{Fourier Series of $ax^{3}$}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Defining function f */
+coef: rand_with_prohib(-5,5,[0]);
+f: coef*x^3;
+
+/* Teacher Answers */
+ta1: 2*coef*pi^2;
+\end{lstlisting}
+\subsubsection{Question Text}
+For reference, the expression for the trigonometric Fourier series on the interval $-\pi \leq x \leq \pi$ is given by \begin{align*}
+f(x) = \frac{1}{2}a_0 + \sum_{n=1}^{\infty}a_n\cos(nx) + \sum_{n=1}^{\infty}b_n\sin(nx)
+\end{align*}
+By finding the Fourier series for the function \(f(x)=@f@\) defined on the interval \(-\pi \leq x < \pi \), and extended periodically, in the form \[ \sum_{n=0}^\infty \frac{(-1)^{n+1}A}{n}\left(1-\frac{6}{\pi^2n^2}\right)\sin(nx) \]determine the value of \(A\). The answer is a number or numerical expression, possibly complex. You may answer in either symbols or decimal form. If you choose to answer in decimal form, give your answer to at least two decimal places. Note that \(\pi\) can be typed as pi in the answer box.
+
+\(A = \) [[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+Is there anything particular about the function \(f(x) = @f@\) which will simplify working out the Fourier series? For example, a certain property of $f(x)$ may prevent you from calculating both \(a_n\) and \(b_n\) in the Fourier series for this function.
+\subsubsection{Model Solution}
+Since \(f(x)=@f@\) is an odd function, we know that the Fourier series must be of the form \[ f(x) = \sum_{n=1}^{\infty}b_n\sin(nx) \qquad \text{where} \qquad b_n = \frac{1}{\pi}\int_{-\pi}^{\pi} \text{d}x \, f(x)\sin(nx) \] as the coefficient $a_n$ will always be $0$. Hence, we calculate \(b_n\) using repeated integration by parts as follows \begin{align*} b_n &= \frac{1}{\pi}\int_{-\pi}^{\pi} \text{d}x \, f(x)\sin(nx) \\ &= \frac{1}{\pi}\int_{-\pi}^{\pi} \text{d}x \, @f@\sin(nx) \\ &= \frac{1}{\pi} \left[ \frac{@-1*coef*x^3@}{n}\cos(nx) \right]_{-\pi}^{\pi} + \frac{1}{\pi}\frac{@3*coef@}{n}\int_{-\pi}^{\pi} \text{d}x \, x^2\cos(nx) \\ &= \frac{1}{\pi} \left(\frac{@-2*coef@\pi^3}{n}\cos(n \pi) \right) + \frac{1}{\pi} \left[ \frac{@3*coef*x^2@}{n^2}\sin(nx) \right]_{-\pi}^{\pi} - \frac{1}{\pi}\frac{@6*coef@}{n^2}\int_{-\pi}^{\pi} \text{d}x \, x\sin(nx) \\ &= \frac{1}{\pi} \left(\frac{@-2*coef@\pi^3}{n}\cos(n \pi) \right) + \frac{1}{\pi} \left[ \frac{@6*coef*x@}{n^3}\cos(nx) \right]_{-\pi}^{\pi} - \frac{1}{\pi}\frac{@6*coef@}{n^3}\int_{-\pi}^{\pi} \text{d}x \, \cos(nx) \\ &= \frac{1}{\pi} \left(\frac{@-2*coef@\pi^3}{n}\cos(n \pi) \right) + \frac{1}{\pi} \left(\frac{@12*coef@\pi}{n^3}\cos(n \pi) \right) - \frac{1}{\pi}\left[ \frac{@-6*coef@}{n^4}\sin(nx) \right]_{-\pi}^{\pi} \\ &= \frac{@-2*coef@\pi^2\cos(n\pi)}{n} \left( 1- \frac{6}{\pi^2n^2} \right) \end{align*}Now, we note that \(\cos(n\pi)=(-1)^n\), so we can simplify our answer to \[ b_n = \frac{(-1)^{n+1}(@2*coef@\pi^2)}{n} \left( 1- \frac{6}{\pi^2 n^2} \right) \] Substituting this into our Fourier series, we get \[ f(x) = \sum_{n=1}^{\infty}\frac{(-1)^{n+1}(@2*coef@\pi^2)}{n} \left( 1- \frac{6}{\pi^2n^2}\right)\sin(nx) \] Comparing this to the form suggested in the question, we find that \(A=@ta1@\).
+\subsubsection{Question Note}
+Find \(A\) in the Fourier series of \(f(x)=@f@\) when written in the form \(\sum_{n=0}^\infty \frac{(-1)^{n+1}A}{n}\left(1-\frac{6}{\pi^2n^2}\right)\sin(nx)\).
+
+\subsection{Fourier Series over a Square}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* List of Functions */
+trigs: [sin,cos];
+etrig: [(exp(i*x)-exp(-i*x))/(2*i), (exp(i*x)+exp(-i*x))/2];
+
+/* Randomly defining f */
+numb1: rand(2)+1;
+numb2: rand(2)+1;
+funcs:[trigs[numb1],trigs[numb2]];
+efuncs:[etrig[numb1],etrig[numb2]];
+f: funcs[1](x)*funcs[2](y);
+
+/* Randomly choosing coefficient */
+pos: [rand_with_prohib(-1,1,[0]),rand_with_prohib(-1,1,[0])];
+
+/* Teacher Answer */
+ta1: 1/(4*pi^2)*integrate(funcs[1](x)*exp(-pos[1]*i*x),x,-pi,pi)*integrate(funcs[2](y)*exp(-pos[2]*i*y),y,-pi,pi);
+\end{lstlisting}
+\subsubsection{Question Text}
+For reference, the expression for the complex Fourier series on the interval $-\pi \leq x \leq \pi$ is given by \begin{align*}
+f(x) = \sum_{n=-\infty}^{\infty}c_ne^{inx}
+\end{align*}
+A function that is periodic in both \(x\) and \(y\), with respective periods \(L_x=2\pi\) and \(L_y=2\pi\), has a complex Fourier series \[ f(x,y) = \sum_{m,n}c_{m,n}e^{i(mx+ny)} \] Give the value of the complex coefficient \(c_{@pos[1]@,@pos[2]@}\) for the function \(f(x,y)=@f@\). You must answer in exact form. The answer is a number of numerical expression, possibly complex.
+
+\(c_{@pos[1]@,@pos[2]@} = \) [[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+Remember the general form \[ c_{m,n} = {1 \over 4 \pi^2} \int_{-\pi}^\pi \int_{-\pi}^\pi f(x,y) e^{-imx}e^{-iny}\, \text{d}x \, \text{d}y \]Try substituting the values of \(m\) and \(n\), and the function \(f(x,y)\) given to calculate the coefficient.
+\subsubsection{Model Solution}
+The coefficient $c_{m,n}$ has the general form \[ c_{m,n} = {1 \over 4 \pi^2} \int_{-\pi}^\pi \int_{-\pi}^\pi f(x,y) e^{-imx}e^{-iny}\, \text{d}x \, \text{d}y \] Using our function and values of $m$ and $n$, we can separate the double integral into two separate integrals \begin{align*} c_{@pos[1]@,@pos[2]@} &= {1 \over 4 \pi^2} \int_{-\pi}^\pi \int_{-\pi}^\pi @f@ e^{@-pos[1]*i*x@}e^{@-pos[2]*i*y@}\, \text{d}x \, \text{d}y \\ &= {1 \over 4 \pi^2} \left( \int_{-\pi}^\pi @funcs[1](x)@ e^{@-pos[1]*i*x@}\, \text{d}x \right) \left( \int_{-\pi}^\pi @funcs[2](y)@ e^{@-pos[2]*i*y@}  \, \text{d}y \right) \end{align*} Each of these integrals can be computed by remembering the exponential forms \(\cos(x) = \frac{1}{2}(e^{ix}+e^{-ix})\) and \(\sin(x) = \frac{1}{2i}(e^{ix}-e^{-ix})\) to simplify the integrals. \begin{align*} c_{@pos[1]@,@pos[2]@} &= {1 \over 4 \pi^2} \int_{-\pi}^\pi @funcs[1](x)@ e^{@-pos[1]*i*x@}\, \text{d}x \int_{-\pi}^\pi @funcs[2](y)@ e^{@-pos[2]*i*y@} \, \text{d}y \\
+&= {1 \over 4 \pi^2} \int_{-\pi}^\pi @ev(efuncs[1]*e^(-pos[1]*i*x),expand,simp)@ \, \text{d}x \int_{-\pi}^\pi @ev(subst(y,x,efuncs[2])*e^(-pos[2]*i*y),expand,simp)@ \, \text{d}y \\
+&= {1 \over 4 \pi^2} \left[ @integrate(funcs[1](x)*e^(-i*pos[1]*x),x,-pi,pi)@ \right] \cdot \left[ @integrate(funcs[2](y)*e^(-i*pos[2]*y),y,-pi,pi)@ \right] \\
+&= @ta1@ \end{align*}
+\subsubsection{Question Note}
+Calculate the value of the complex coefficient \(c_{@pos[1]@,@pos[2]@}\) for the function \(f(x,y)=@f@\).
+
+\subsection{Fourier Transform of Triangular Function}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Number for height/width of triangle in f */
+numb: rand(9)+1;
+
+/* Plot of f */
+f(x):=if (abs(x) <= numb) then numb-abs(x) else 0*x;
+
+/* Teacher answer */
+ta1: 2*sin(numb*k/2)/k;
+\end{lstlisting}
+\subsubsection{Question Text}
+For reference, the expression for the Fourier transform of $f(x)$ is given by \begin{align*}
+\tilde{f}(x) = \int_{-\infty}^{\infty} \text{d}x \, e^{-ikx}f(x)
+\end{align*}
+The Fourier transform of the triangular function \[ f(x) = \begin{cases} @numb@-|x| & \text{for } |x| \leq @numb@\\ 0 & \text{else} \end{cases} \] can be written in the form \(\tilde{f}(k) = g(k)^2\). Give an expression for \(g(k)\). The answer is an algebraic expression, possibly complex, involving $k$. Hint: you should find the double angle identity \(\cos(k) = 2\cos^2(\frac{k}{2}) -1 = 1 - 2\sin^2(\frac{k}{2})\) useful in simplifying your answer to the desired form. A plot of the function has been provided below, if you're having trouble visualising the function.
+
+@plot(f(x),[x,-2*numb,2*numb],[y,-2*numb,2*numb])@
+
+\(g(k) = \) [[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+Since the function is piecewise, you should be able to split the integral of the Fourier transform into separate integrable parts. You should try splitting \(f(x)\) over the ranges \((-\infty,-@numb@),(-@numb@,0),(0,@numb@)\) and \((@numb@,\infty)\), and then the integrals in the Fourier transform over those ranges too.
+\subsubsection{Model Solution}
+It may be easier to note that our function can be written in the form \[ f(x) = \begin{cases} 0 & \text{for } x < @-numb@\\ @numb@+x & \text{for } -@numb@ \leq x \leq 0\\ @numb@-x & \text{for } 0< x \leq @numb@\\ 0 & \text{for } @numb@ < x \end{cases} \] From this form, we see that we can partition the function, and henceforth the integral, into separate parts \begin{align*} \tilde{f}(k) &= \int_{-\infty}^{\infty} e^{-ikx}f(x) \, \text{d}x\\ &= \int_{-\infty}^{-@numb@} e^{-ikx}\cdot 0 \, \text{d}x + \int_{-@numb@}^{0} e^{-ikx}(@numb@+x) \, \text{d}x + \int_{0}^{@numb@} e^{-ikx}(@numb@-x) \, \text{d}x + \int_{@numb@}^{\infty} e^{-ikx}\cdot 0 \, \text{d}x \\ &= \int_{-@numb@}^{0} e^{-ikx}(@numb@+x) \, \text{d}x + \int_{0}^{@numb@} e^{-ikx}(@numb@-x) \, \text{d}x \end{align*} Both these integrals can be integrated by parts as follows \begin{align*} \tilde{f}(k) &= \int_{-@numb@}^{0} e^{-ikx}(@numb@+x) \, \text{d}x + \int_{0}^{@numb@} e^{-ikx}(@numb@-x) \, \text{d}x \\ &= \left[\frac{@numb@+x}{-ik}e^{-ikx}\right]^{0}_{-@numb@} + \int_{-@numb@}^{0} \frac{1}{ik}e^{-ikx} \, \text{d}x + \left[\frac{@numb@-x}{-ik}e^{-ikx}\right]^{@numb@}_{0} - \int_{0}^{@numb@} \frac{1}{ik}e^{-ikx} \, \text{d}x \\ &= \left[\frac{-@numb@}{ik}\right] + \left[\frac{1}{k^2}e^{-ikx}\right]^{0}_{-@numb@} + \left[\frac{@numb@}{ik}\right] - \left[\frac{1}{k^2}e^{-ikx}\right]^{@numb@}_{0} \\ &= \frac{1}{k^2}\left( 2-e^{@numb@ik}-e^{-@numb@ik} \right) \end{align*} Remembering that \(\cos(@numb*x@)=\frac{1}{2}(e^{@numb@ix}+e^{-@numb@ix})\), we can rewrite the expression as \begin{align*} \tilde{f}(k) &= \frac{1}{k^2}\left( 2-e^{@numb@ik}-e^{-@numb@ik} \right) \\ &= \frac{2(1-\cos(@numb*k@))}{k^2} \end{align*} And by using the double angle identity \(\cos(k) = 1 - 2\sin^2(\frac{k}{2})\) given as a hint, we find that \(1- \cos(@numb*k@) = 2\sin^2(@ev(numb*k/2,simp)@)\). So, we have \begin{align*} \tilde{f}(k) &= \frac{2(1-\cos(@numb*k@))}{k^2} \\ &= \frac{4\sin^2(@numb*k/2@)}{k^2} \\ &= \left(\frac{2\sin(@numb*k/2@)}{k}\right)^2 \end{align*} And so, \(g(k) = \frac{2\sin(@numb*k/2@)}{k} \)
+\subsubsection{Question Note}
+Fourier transform \(f = @f(x)@\) in the form \(\tilde{f}(k) = g(k)^2\) by finding \(g(k)\)
+
+\subsection{Fourier Transform of Step Function}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Defining function f */
+numb1: rand(5)+1;     /* Gives the height(s) of f */
+numb2: rand(5)+1;     /* Gives the x-value(s) of discontinuities of f */
+f: lambda([x],if (x>=-numb2 and x<=0) then -numb1 else if (x>0 and x<=numb2) then numb1 else 0);
+
+/* Teacher Answer */
+ta1: 2*numb1*( 1 - cos(numb2*k));
+\end{lstlisting}
+\subsubsection{Question Text}
+For reference, the expression for the Fourier transform of $f(x)$ is given by \begin{align*}
+\tilde{f}(x) = \int_{-\infty}^{\infty} \text{d}x \, e^{-ikx}f(x)
+\end{align*}The function \(f(x)\) is defined by \[ f(x) = \begin{cases} @-numb1@ & \text{for } @-numb2@ \leq x \leq 0\\ @numb1@ & \text{for } 0 < x \leq @numb2@\\ 0 & \text{else} \\ \end{cases} \] By finding the Fourier transport of $f(x)$ given by \(\tilde{f}(k) = \frac{g(k)}{ik}\), given the function \(g(k)\). The answer is a real, algebraic expression involving $k$. A plot of \(f(x)\) has been included below, if you're having trouble visualising the function.
+
+@plot(f(x),[x,-2*numb2,2*numb2],[y,-2*numb1,2*numb1])@
+
+\(g(k) = \) [[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+Since the function is piecewise over the ranges \((-\infty,-@numb2@),(-@numb2@,0),(0,@numb2@)\) and \((@numb2@,\infty)\), you should be able to split the integral of its Fourier transform over those ranges into separate, integrable integrals.
+\subsubsection{Model Solution}
+Since the function is piecewise, we can partition the integrals of the Fourier transform similarly \begin{align*} \tilde{f}(k) &= \int_{-\infty}^{\infty} e^{-ikx}f(x) \, \text{d}x\\ &= \int_{-\infty}^{@-numb2@} e^{-ikx}\cdot 0 \, \text{d}x + \int_{@-numb2@}^{0} @-numb1*e^(-i*k*x)@ \, \text{d}x + \int_{0}^{@numb2@} @numb1*e^(-i*k*x)@ \, \text{d}x + \int_{@numb2@}^{\infty} e^{-ikx}\cdot 0 \, \text{d}x \\ &= \int_{@-numb2@}^{0} @-numb1*e^(-i*k*x)@ \, \text{d}x + \int_{0}^{@numb2@} @numb1*e^(-i*k*x)@ \, \text{d}x \end{align*} These integrals can be easily computed \begin{align*} \tilde{f}(k) &= \int_{@-numb2@}^{0} @-numb1*e^(-i*k*x)@ \, \text{d}x + \int_{0}^{@numb2@} @numb1*e^(-i*k*x)@ \, \text{d}x \\ &= \left[\frac{@-numb1@}{-ik}e^{-ikx}\right]_{@-numb2@}^{0} + \left[\frac{@numb1@}{-ik}e^{-ikx}\right]_{0}^{@numb2@} \\ &= \left[\frac{@-numb1@}{ik}(-1 + e^{@numb2*i*k@})\right]+ \left[\frac{@numb1@}{ik}(1-e^{@-numb2*i*k@})\right] \\ &= \frac{1}{ik} \left( @2*numb1@ - @numb1*e^(numb2*i*k)@ - @numb1*e^(-numb2*i*k)@ \right) \end{align*} Remembering that \(\cos(@numb2*k@) = \frac{1}{2}\left(e^{@numb2*i*k@} + e^{@-numb2*i*k@}\right)\), we can simplify this to \begin{align*} \tilde{f}(k) &= \frac{1}{ik} \left( @2*numb1@ - @numb1*e^(numb2*i*k)@ - @numb1*e^(-numb2*i*k)@ \right) \\ &= \frac{1}{ik} \left( @2*numb1@ \left( 1 - \frac{1}{2}\left(e^{@numb2*i*k@} + e^{@-numb2*i*k@}\right)\right)\right) \\ &= \frac{1}{ik} \left( @2*numb1@ \left( 1 - \cos(@numb2*k@)\right)\right) \end{align*} Hence, we see \( g(k) = @ta1@ \)
+\subsubsection{Question Note}
+For $f = @f@$, by finding its Fourier transform \(\tilde{f}(k) = \frac{g(k)}{ik}\), find \(g(k)\)
+
+\subsection{Sifting Property of Dirac Delta Function}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Initial set up */
+funcs: [sin,cos,tan,exp,log];
+numbs: [rand_with_prohib(-5,5,[0]),rand_with_prohib(-3,3,[0]),rand(5)+1];
+coords:[[-pi/6,-3*pi/6,-5*pi/6, pi/6,3*pi/6,5*pi/6], [0,pi/3,-pi/3,2*pi/3,-2*pi/3,-pi,pi],[pi/4,3*pi/4,-pi/4,-3*pi/4],[0,1,2,3,4,5], [1,2,3,4,5]];
+
+/* Defining f and value in dirac delta */
+fnumb: 1+rand(5);
+ourcoord: rand(coords[fnumb]);
+f : (x + numbs[1])^(numbs[2])*funcs[fnumb](x*numbs[3]);
+
+/* Teacher Answer */
+ta1: subst(ourcoord,x,f);
+\end{lstlisting}
+\subsubsection{Question Text}
+Enter the value of $I$, where \(\delta(x)\) is the Dirac delta-function, into the answer box. The answer is a number or numerical expression, possibly complex. You may answer in either symbols or decimal form, and do not need to give your answer in its simplest form. Note that $\pi$, \(e^{x}\) and $\ln(x)$ can be typed as pi, exp(x), and ln(x) or log(x) in the answer box.. If you choose to answer in decimal form, give your answer to at least two decimal places. \[ I = \int_{-\infty}^{\infty} \text{d}x \, \delta\left(@ex-coords[fnumb]@\right)@f@ \]
+
+$I = $ [[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+Remember the general formula \[ \int_{x_{-}}^{x_{+}} \text{d}x \, \delta\left(x-x_0\right)f(x) = \begin{cases} f(x_0) & \text{if } x_{-}\leq x_{0} \leq x_{+} \\ 0 & \text{else} \\ \end{cases} \]
+\subsubsection{Model Solution}
+We know that in general \[ \int_{x_{-}}^{x_{+}} \text{d}x \, \delta\left(x-x_0\right)f(x) = \begin{cases} f(x_0) & \text{if } x_{-}\leq x_{0} \leq x_{+} \\ 0 & \text{else} \\ \end{cases} \] In our case, we have \(x_{-}=-\infty\) and \(x_{+}=\infty\). So, our solution must be \(f(x_0)\) for our given function \(f(x)=@f@\) and value of \(x_0=@ourcoord@\). We find that \begin{align*} I &= \int_{-\infty}^{\infty} \text{d}x \, \delta\left(@x-ourcoord@\right)@f@ \\ &= \left(@ourcoord@ + @numbs[1]@\right)^{@numbs[2]@} @funcs[fnumb]@\left(@numbs[3]@\cdot@ourcoord@ \right) \\ &= @ta1@ \end{align*}
+\subsubsection{Question Note}
+Compute $I = \int_{-\infty}^{\infty} \text{d}x \, \delta\left(@ev(x-coords[fnumb])@\right)@f@$
+
+\section{Practice Test 1}
+\subsection{Step Function's Fourier Coefficient}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Defining height and steps of f */
+low: rand([-pi/2,-pi/3,-pi/4,-pi/6,-2*pi/3,-3*pi/4]);
+high: rand([pi/2,pi/3,pi/4,pi/6,2*pi/3,3*pi/4]);
+height: rand_with_prohib(-9,9,[0]);
+f: lambda([x],if (x>=low and x<=high) then height else 0);
+
+/* Randomly defining coefficient and resulting effects */
+numb: rand(2)+1;
+AB: [a,b];
+CosSin: [cos,sin];
+coef: AB[numb];
+coefnumb: rand_with_prohib(-9,9,[0]);
+func: CosSin[numb];
+
+/* Teacher Answer */
+ta1: integrate(height*func(coefnumb*x),x,low,high)/pi;
+\end{lstlisting}
+\subsubsection{Question Text}
+For reference, the expression for the trigonometric Fourier series on the interval $-\pi \leq x \leq \pi$ is given by \begin{align*}
+f(x) = \frac{1}{2}a_0 + \sum_{n=1}^{\infty}a_n\cos(nx) + \sum_{n=1}^{\infty}b_n\sin(nx)
+\end{align*}
+For the function \(f(x)\) defined on the range \(-\pi \leq x \leq \pi\) by \[ f(x) = \begin{cases} @height@ & \text{for } @low@ \leq x \leq @high@\\ 0 & \text{else} \\ \end{cases} \] give the value of the coefficient \(@coef@_{@coefnumb@}\) in the trigonometric Fourier series expansion. The answer is a number or numerical expression, possibly complex. You may answer in either symbols or decimal form, and you do not need to give your answer in its simplest form. Note that \(\pi\) and \(\sqrt{n}\) can be typed as pi and sqrt(n) in the answer box. If you choose to answer in decimal form, give your answer to at least two decimal places. A plot of \(f(x)\) has been included below, if you're having trouble visualising the function.
+
+@plot(f(x),[x,-pi,pi],[y,-10,10])@
+
+$@coef@_{@coefnumb@} = $ [[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+You should try using the general formula for \(@coef@_{@coefnumb@}\) given by \begin{align*} @coef@_{@coefnumb@} &= \frac{1}{\pi} \int_{-\pi}^{\pi} f(x)@func@(@coefnumb@x) \, \text{d}x \end{align*} You should also try partitioning the integral for \(@coef@_{@coefnumb@}\) by using the same partitions used to define $f(x)$.
+\subsubsection{Model Solution}
+Using the general formula for \(@coef@_{@coefnumb@}\), we find \begin{align*} @coef@_{@coefnumb@} &= \frac{1}{\pi} \int_{-\pi}^{\pi} f(x)@func@(@coefnumb*x@) \, \text{d}x \end{align*} However, since \(f(x)\) is zero on most of the function, we can simplify our integral to the ranges in which non-zero values are taken as follows \begin{align*} @coef@_{@coefnumb@}
+&= \frac{1}{\pi} \int_{-\pi}^{@low@} 0\cdot@func(coefnumb*x)@ \, \text{d}x + \frac{1}{\pi} \int_{@low@}^{@high@} @height*func(coefnumb*x)@ \, \text{d}x + \frac{1}{\pi} \int_{@high@}^{\pi} 0\cdot@func(coefnumb*x)@ \, \text{d}x \\ &= \frac{1}{\pi} \int_{@low@}^{@high@} @height*func(coefnumb*x)@ \, \text{d}x \\ &= \frac{1}{\pi} \left[ @integrate(height*func(coefnumb*x),x)@ \right]_{@low@}^{@high@} \\ &= @ta1@ \end{align*}
+\subsubsection{Question Note}
+Give the value of the coefficient \(@coef@_{@coefnumb@}\) in the trigonometric Fourier series expansion of \(f(x) = @f@\)
+
+\subsection{Complex Fourier Coefficient}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Randomly generating coefficient, index and function f */
+index: rand([-2,-1,1,2]);
+numb: rand_with_prohib(-9,9,[0]);
+funcs: [sin,cos];
+fnumb: 1+rand(2);
+etrig: [(exp(i*x)-exp(-i*x))/(2*i), (exp(i*x)+exp(-i*x))/2];     /* Exponential form of sin and cos for display purposes */
+f: (numb+funcs[fnumb](x))^2;
+
+/* Teacher Answer */
+ta1: integrate(f*exp(-i*index*x)/(2*pi),x,-pi,pi);
+\end{lstlisting}
+\subsubsection{Question Text}
+For reference, the expression for the complex Fourier series on the interval $-\pi \leq x \leq \pi$ is given by \begin{align*}
+f(x) = \sum_{n=-\infty}^{\infty}c_ne^{inx}
+\end{align*}
+For the function \(f(x) = @f@\) on the interval \(-\pi \leq x \leq \pi\), give the value of the coefficient \(c_{@index@}\) in the complex Fourier series expansion. The answer is a number or numerical expression, possibly complex.
+
+\(c_{@index@} = \) [[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+The general form for the complex coefficient \(c_n\) in the complex Fourier series expansion is given by \begin{align*} c_{n} &= \frac{1}{2\pi} \int_{-\pi}^{\pi} f(x)e^{@-i*n*x@} \, \text{d}x \end{align*}
+Try substituting the value of $n=@index@$ and $f(x)=@f@$ into this integral.
+\subsubsection{Model Solution}
+The general form for the complex coefficient \(c_{@index@}\) in the complex Fourier series expansion is given by \begin{align*} c_{@index@} &= \frac{1}{2\pi} \int_{-\pi}^{\pi} f(x)e^{@-index*i*x@} \, \text{d}x \\ &= \frac{1}{2\pi} \int_{-\pi}^{\pi} @f@e^{@-index*i*x@} \, \text{d}x \\ \end{align*} We must expand this and change the trigonometric functions into their exponential equivalents \begin{align*} c_{@index@} &= \frac{1}{2\pi} \int_{-\pi}^{\pi} @f@e^{@-index*i*x@} \, \text{d}x \\ &= \frac{1}{2\pi} \int_{-\pi}^{\pi} (@ev(f,expand)@)e^{@-index*i*x@} \, \text{d}x \\ &= \frac{1}{2\pi} \int_{-\pi}^{\pi} \left(@numb^2@  + @2*numb*etrig[fnumb]@ + @ev((etrig[fnumb])^2,simp)@ \right)e^{@-index*i*x@} \, \text{d}x\\
+&= \frac{1}{2\pi} \int_{-\pi}^{\pi} \left(@numb^2@ + @2*numb*etrig[fnumb]@ + @ev((etrig[fnumb])^2,expand,simp)@ \right)e^{@-index*i*x@} \, \text{d}x\\
+&= \frac{1}{2\pi} \int_{-\pi}^{\pi} @ev((numb^2 + 2*numb*etrig[fnumb]+(etrig[fnumb])^2)*e^(-index*i*x),expand,simp)@ \, \text{d}x \\ &= \frac{1}{2\pi} \left[ @ev(integrate((numb^2 + 2*numb*etrig[fnumb]+(etrig[fnumb])^2)*e^(-index*i*x),x),expand)@ \right]^{\pi}_{-\pi} \end{align*} Instead of substituting the values $\pi$ and $-\pi$ into all these terms, we note that \(e^{n \pi i} = e^{-n\pi i}\) for all $n \in \mathbb{Z}$. This means that all the exponential terms will cancel once $\pi$ and $-\pi$ are evaluated, leaving only the linear term. Henceforth, \begin{align*} c_{@index@} &= \frac{1}{2\pi} \left[ @ev(integrate((numb^2 + 2*numb*etrig[fnumb]+(etrig[fnumb])^2)*e^(-index*i*x),x),expand)@ \right]^{\pi}_{-\pi} \\ &= \frac{1}{2\pi} \left[@integrate(f*exp(-i*index*x),x,-pi,pi)@ \right] \\ &= @ta1@ \end{align*}
+\subsubsection{Question Note}
+For the function \(f(x) = @f@\) on the interval \(-\pi \leq x \leq \pi\), give the value of the coefficient \(c_{@index@}\) in the complex Fourier series expansion.
+
+\subsection{Fourier Transform of Piecewise Function}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Case defining number */
+numb: rand(2)+1;
+
+/* Defining f */
+func: [exp(x),exp(-x)];
+coef1: rand(9)+1;
+coef2: (rand(9)+1);
+f: coef1*subst(coef2*x,x,func[numb]);
+
+/* Used in integrals depending on how f is randomly generated */
+firstint: [f,0];
+secondint: [0,f];
+intlow: [-inf,0];
+inthigh: [0,inf];
+
+/* Used in question text to describe the functions in their cases */
+gzero: if (numb=1) then 0 else f;
+lzero: if (numb=1) then f else 0;
+
+/* Case plots f */
+fplot: [lambda([x],if (x<0) then f else 0), lambda([x],if (x>0) then f else 0)];
+
+/* Teacher Answer */
+ta1: ev((integrate(f*e^(-i*k*x),x,intlow[numb],inthigh[numb])),expand,simp);
+\end{lstlisting}
+\subsubsection{Question Text}
+For reference, the expression for the Fourier transform of $f(x)$ is given by \begin{align*}
+\tilde{f}(x) = \int_{-\infty}^{\infty} \text{d}x \, e^{-ikx}f(x)
+\end{align*}For the function \(f(x)\) defined by \[ f(x) = \begin{cases} @gzero@ & \text{for } x>0\\ @lzero@ & \text{for } x\leq0 \\ \end{cases} \] find the expression for the Fourier transform \(\tilde{f}(k)\). A plot of \(f(x)\) has been included, if you're having trouble visualising the function. Hint: You may use that \(\underset{x \rightarrow \infty}\lim e^{-xc} = 0\) for any \(c \in \mathbb{C}\) where $\operatorname{Re}(c)>0$.
+
+@plot(fplot[numb](x),[x,-5,5],[y,-2*coef1,2*coef1])@
+
+\(\tilde{f}(k) = \)[[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+Since the function is piecewise over the ranges \((-\infty,0) \) and \((0,\infty) \), you should be able to split the integral of its Fourier transform over those ranges too to give two integrable integrals.
+\subsubsection{Model Solution}
+We partition the integral of the Fourier transformation according to the piecewise definition of the function, to give separate integrable integrals \begin{align*} \tilde{f}(k) &= \int_{-\infty}^{\infty} f(x)e^{-ikx} \, \text{d}x \\
+&= \int_{-\infty}^{0} @firstint[numb]@ \cdot e^{-ikx} \, \text{d}x + \int_{0}^{\infty} @secondint[numb]@ \cdot e^{-ikx} \, \text{d}x \\
+&= \int_{@intlow[numb]@}^{@inthigh[numb]@} @ev(f*e^(-i*k*x),expand,simp)@ \, \text{d}x \\ &= \left[ @integrate(f*e^(-i*k*x),x)@ \right]_{@intlow[numb]@}^{@inthigh[numb]@} \\ &= @ev(integrate(f*e^(-i*k*x),x,intlow[numb],inthigh[numb]),simp)@ \end{align*}
+\subsubsection{Question Note}
+Find the Fourier transform of  \(f = @fplot@\)
+
+\subsection{Evaluating Fourier Transform at k=0}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Defining f */
+numb: rand(5)+1;
+f: numb^2-x^2;
+fplot: lambda([x], if (abs(x)<= numb) then f else 0);
+
+/* Teacher Answer */
+ta1: integrate(f,x,-numb,numb);
+\end{lstlisting}
+\subsubsection{Question Text}
+For reference, the expression for the Fourier transform of $f(x)$ is given by \begin{align*}
+\tilde{f}(x) = \int_{-\infty}^{\infty} \text{d}x \, e^{-ikx}f(x)
+\end{align*}For the function \(f(x)\) defined by \[ f(x) = \begin{cases} @f@ & \text{for } |x| \leq @numb@\\ 0 & \text{else} \\ \end{cases} \] find the value of its Fourier transform \(\tilde{f}(k)\) evaluated at \(k=0\). The answer is a real number or numerical expression. If you give your answer in decimal form, give it to at least two decimal places. A plot of \(f(x)\) has been included below, if you're having trouble visualising the function.
+
+@plot(fplot(x),[x,-2*numb,2*numb],[y,-2*numb2,2*numb2])@
+
+\(\tilde{f}(0) = \) [[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+After partitioning the Fourier transform accordingly with the piecewise definition of $f(x)$ to get three integrable integrals, you should try letting \(k=0\), to simplify the computation of any integrals.
+\subsubsection{Model Solution}
+After partitioning the Fourier transform into separate integrals accordingly with the piecewise definition of $f(x)$, we see that \begin{align*} \tilde{f}(k) &= \int_{-\infty}^{\infty} f(x)e^{-ikx} \, \text{d}x \\ &= \int_{-\infty}^{@-numb@} 0 \cdot e^{-ikx} \, \text{d}x + \int_{@-numb@}^{@numb@} \left(@f@\right)e^{-ikx} \, \text{d}x + \int_{@numb@}^{\infty} 0 \cdot e^{-ikx} \, \text{d}x \\ &= \int_{@-numb@}^{@numb@} \left(@f@\right)e^{-ikx} \, \text{d}x \end{align*} It may be tempting to attempt to evaluate this integral to get an expression for \(\tilde{f}(k)\), and then to evaluate this at \(k=0\). Whilst this can be done, it is a laborious process involving repeated integration by parts and using L'Hôpital's rule to evaluate the limit as $k \rightarrow 0$. Instead, it will be quicker and easier if we let \(k=0\) at this stage. Then, we get \begin{align*} \tilde{f}(0) &= \int_{@-numb@}^{@numb@} \left(@f@\right)e^{-(0)ix} \, \text{d}x \\ &= \int_{@-numb@}^{@numb@} @f@ \, \text{d}x \\ &= \left[ @integrate(f,x)@ \right]_{@-numb@}^{@numb@} \\ &= @ta1@ \end{align*}
+\subsubsection{Question Note}
+Find \(\tilde{f}(0)\) for $f(x) = @fplot@$
+
+\subsection{Sifting Property of Dirac Delta Function 2}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Initial set up */
+funcs: [sin,cos,tan,exp,log];
+coef: [rand_with_prohib(0,5,[0]), rand_with_prohib(0,5,[0]),rand_with_prohib(0,5,[0]),rand_with_prohib(-5,5,[0]), rand_with_prohib(0,5,[0])];
+coords:[[-pi/6,-3*pi/6,-5*pi/6, pi/6,3*pi/6,5*pi/6], [0,pi/3,-pi/3,2*pi/3,-2*pi/3,-pi,pi],[pi/4,3*pi/4,-pi/4,-3*pi/4],[0,1,2,3,4,5], [1,2,3,4,5]];
+
+/* Defining f and value in dirac delta */
+fnumb: 1+rand(5);
+ourcoord: rand(coords[fnumb]);
+f : funcs[fnumb](x*coef[fnumb]);
+
+/* Teacher Answer */
+ta1: subst(ourcoord,x,f);
+\end{lstlisting}
+\subsubsection{Question Text}
+Enter the value of \(I\), where \(\delta(x)\) is the Dirac delta-function, into the answer box. The answer is a number or numerical expression, possibly complex. You may answer in either symbols or decimal form, and do not need to give your answer in its simplest form. Note that \(\pi\), \(e^{x}\) and \(\ln(x)\) can be typed as pi, exp(x), and ln(x) or log(x) inthe answer box.. If you choose to answer in decimal form, give your answer to at least two decimal places. \[ I = \int_{-\infty}^{\infty} \text{d}x \, \delta\left(@x-ourcoord@\right)@f@ \]
+
+\(I = \) [[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+Remember the general formula \[ \int_{x_{-}}^{x_{+}} \text{d}x \, \delta\left(x-x_0\right)f(x) = \begin{cases} f(x_0) & \text{if } x_{-}\leq x_{0} \leq x_{+} \\ 0 & \text{else} \\ \end{cases} \]
+\subsubsection{Model Solution}
+We know that in general \[ \int_{x_{-}}^{x_{+}} \text{d}x \, \delta\left(x-x_0\right)f(x) = \begin{cases} f(x_0) & \text{if } x_{-}\leq x_{0} \leq x_{+} \\ 0 & \text{else} \\ \end{cases} \] In our case, we have \(x_{-}=-\infty\) and \(x_{+}=\infty\). So, our solution must be \(f(x_0)\) for our given function \(f(x)=@f@\) and value of \(x_0=@ourcoord@\). We find that \begin{align*} I &= \int_{-\infty}^{\infty} \text{d}x \, \delta\left(@x-ourcoord@\right)@f@ \\ &= @funcs[fnumb]@\left(@coef[fnumb]@\cdot@ourcoord@\right) \\ &= @ta1 @\end{align*}
+\subsubsection{Question Note}
+Compute \(I = \int_{-\infty}^{\infty} \text{d}x \, \delta\left(@ev(x-coords[fnumb])@\right)@f@\)
+
+\section{Test 2}
+\subsection{Convolution of Dirac Delta Function}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Defining function g */
+coef: [rand_with_prohib(-5,5,[-1,1,0]),rand_with_prohib(-5,5,[-1,1,0]),rand_with_prohib(2,3,[0])];
+funcs: [sin,cos,exp];
+fnumb: 1+rand(3);
+g: coef[1]*funcs[fnumb](coef[2]*x^coef[3]);
+
+/* Defining function f. Note one root is the NEGATIVE of the actual root, for notational display purposes */
+root1: rand(9)+1;
+root2: rand_with_prohib(1,9,[root1]);
+poly : (x+root1)*(x-root2);
+diffpoly: diff(poly,x);
+
+/* Teacher Answer */
+ta1: (subst(x+root1,x,g))/(abs(subst(-root1,x,diffpoly))) + (subst(x-root2,x,g))/(abs(subst(root2,x,diffpoly)));
+\end{lstlisting}
+\subsubsection{Question Text}
+For the following functions \begin{align*} f(x)&= \delta((x+@root1@)(x-@root2@)) \\ g(x) &= @g@ \end{align*} where \(\delta(x)\) is the Dirac delta function, complete the expression for the convolution $f(x) \ast g(x)$.  The answer is an algebraic expression involving $x$. Note that \(\sin(x)\), \(\cos(x)\) and \(e^{x}\) can be typed as sin(x), cos(x), and exp(x) in the answer box.
+
+\(f(x) \ast g(x) = \) [[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+It will be useful to recall the following property of the Dirac delta function: 
+
+For a function \(A(x)\) with roots \(x_1, x_2, \cdots, x_n\), assuming \(A'(x_k) \neq 0 \) for \(k=1,2,\cdots,n\), then \[ \int_{-\infty}^{\infty} \text{d}x \, \delta(A(x))B(x) = \sum_{k=1}^{n}\frac{B(x_k)}{|A'(x_k)|} \]
+\subsubsection{Model Solution}
+The formula for a convolution is given by \begin{align*} f(x) \ast g(x) &= \int_{-\infty}^{\infty}\text{d}x' \, f(x')g(x-x') \\ &= \int_{-\infty}^{\infty}\text{d}x' \, \delta((x'+@root1@)(x'-@root2@)) \cdot @coef[1]*funcs[fnumb]@\left(@coef[2]@(x-x')^{@coef[3]@}\right) \end{align*} But we see that this is the form of a special property of the Dirac delta function: for a function \(A(x)\) with roots \(x_1, x_2, \cdots, x_n\), assuming \(A'(x_k) \neq 0 \) for \(k=1,2,\cdots,n\), then \[ \int_{-\infty}^{\infty} \text{d}x \, \delta(A(x))B(x) = \sum_{k=1}^{n}\frac{B(x_k)}{|A'(x_k)|} \] So, we apply this general formula to get \begin{align*} f(x) \ast g(x) &= \int_{-\infty}^{\infty}\text{d}x' \, \delta((x'+@root1@)(x'-@root2@)) \cdot @coef[1]*funcs[fnumb]@\left(@coef[2]@(x-x')^{@coef[3]@}\right) \\ &= \frac{@subst(x+root1,x,g)@}{|@subst(-root1,x,diffpoly)@|} + \frac{@subst(x-root2,x,g)@}{|@subst(root2,x,diffpoly)@|} \\ &= @ta1@ \end{align*}
+\subsubsection{Question Note}
+Find the convolution of \(f(x)= \delta((@x+root1@)(@x-root2@))\) and \( g(x) = @g@ \).
+
+\subsection{Parseval's Theorem}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Defining f */
+numb: rand(9)+1;
+fplot(x):=if (abs(x) <= numb) then numb-abs(x) else 0*x;
+
+/* Teacher Answer */
+ta1: abs(numb^3)/24;     /* note integrate is not used because I don't trust it'll always work */
+\end{lstlisting}
+\subsubsection{Question Text}
+For reference, the expression for the Fourier transform of $f(x)$ is given by \begin{align*}
+\tilde{f}(x) = \int_{-\infty}^{\infty} \text{d}x \, e^{-ikx}f(x)
+\end{align*}
+For our definition of the Fourier transform, Parseval's theorem states that \[ \frac{1}{2\pi}\int_{-\infty}^{\infty} |\tilde{f}(k)|^2 \, \text{d}k = \int_{-\infty}^{\infty} |f(x)|^2 \, \text{d}x \]where $\tilde{f}(k)$ is the Fourier transform of $f(x)$. By applying Parseval's theorem to the function \[ f(x) = \begin{cases} @numb@-|x| & \text{for } |x| \leq @numb@\\ 0 & \text{else} \\ \end{cases} \] or otherwise, find the value of the following integral \[ I = \int_{-\infty}^{\infty}\frac{\text{d}k}{2\pi} \, \frac{\sin(@numb*k/2@)^4}{k^4} \] The answer is a number of numerical expression. If you choose to give your answer in decimal form, give it to at least two decimals places. Hint: you should find the double angle identity \(\cos(k) = 2\cos^2(\frac{k}{2}) -1 = 1 - 2\sin^2(\frac{k}{2})\) useful in simplifying you answer to the form of the integral. A plot of the function has been provided below, if you're having trouble visualising the function.
+
+@plot(fplot(x),[x,-2*numb,2*numb],[y,-2*numb,2*numb])@
+
+\(I = \)[[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+You should try calculating the Fourier transform of $f(x)$ and manipulating it to be in the form of the integrand of $I$ upon squaring, and then calculate the right-hand side integral of Parseval's theorem.
+\subsubsection{Model Solution}
+Firstly, we must calculate the Fourier transform. It may be easier to note that our function can be written in the form \[ f(x) = \begin{cases} @numb@+x & \text{for } -@numb@ \leq x \leq 0\\ @numb@-x & \text{for } 0< x \leq @numb@\\ 0 & \text{else} \end{cases} \] From this form, we see that we can partition the function, and henceforth the integral into separate parts. \begin{align*} \tilde{f}(k) &= \int_{-\infty}^{\infty} e^{-ikx}f(x) \, \text{d}x\\ &= \int_{-\infty}^{-@numb@} e^{-ikx}\cdot 0 \, \text{d}x + \int_{-@numb@}^{0} e^{-ikx}(@numb@+x) \, \text{d}x + \int_{0}^{@numb@} e^{-ikx}(@numb@-x) \, \text{d}x + \int_{@numb@}^{\infty} e^{-ikx}\cdot 0 \, \text{d}x \\ &= \int_{-@numb@}^{0} e^{-ikx}(@numb@+x) \, \text{d}x + \int_{0}^{@numb@} e^{-ikx}(@numb@-x) \, \text{d}x \end{align*} Both these integrals can be integrated by parts as follows \begin{align*} \tilde{f}(k) &= \int_{-@numb@}^{0} e^{-ikx}(@numb@+x) \, \text{d}x + \int_{0}^{@numb@} e^{-ikx}(@numb@-x) \, \text{d}x \\ &= \left[\frac{@numb@+x}{-ik}e^{-ikx}\right]^{0}_{-@numb@} + \int_{-@numb@}^{0} \frac{1}{ik}e^{-ikx} \, \text{d}x + \left[\frac{@numb@-x}{-ik}e^{-ikx}\right]^{@numb@}_{0} - \int_{0}^{@numb@} \frac{1}{ik}e^{-ikx} \, \text{d}x \\ &= \left[\frac{-@numb@}{ik}\right] + \left[\frac{1}{k^2}e^{-ikx}\right]^{0}_{-@numb@} + \left[\frac{@numb@}{ik}\right] - \left[\frac{1}{k^2}e^{-ikx}\right]^{@numb@}_{0} \\ &= \frac{1}{k^2}\left( 2-e^{@numb*i*k@}-e^{-@numb*i*k@} \right) \end{align*} Remembering that $\cos(@numb*x@)=\frac{1}{2}(e^{@numb*i*x@}+e^{-@numb*i*x@})$, we can rewrite the expression as \begin{align*} \tilde{f}(k) &= \frac{1}{k^2}\left( 2-e^{@numb*i*k@}-e^{@-numb*i*k@} \right) \\ &= \frac{2(1-\cos(@numb*k@))}{k^2} \end{align*} And by using the double angle identity $\cos(k) = 1 - 2\sin^2(\frac{k}{2})$ given as a hint, we find that $1- \cos(@numb*k@) = 2\sin^2(@numb*k/2@)$ and so we have \begin{align*} \tilde{f}(k) &= \frac{2(1-\cos(@numb*k@))}{k^2} \\ &= \frac{4\sin^2(@numb*k/2@)}{k^2} \end{align*} Hence, we have the Fourier transform, and, after squaring, it is in the desired form of the integrand of $I$ (up to a scalar multiple). Now, we must tackle the right-hand side of Parseval's theorem by computing the integral. As before, we can restrict our integral to the range $(-@numb@,@numb@)$, as it is zero elsewhere. \begin{align*} \int_{-\infty}^{\infty} |f(x)|^2 \, \text{d}x &= \int_{-@numb@}^{@numb@} |@numb@-|x||^2 \text{d}x \\ &= \int_{-@numb@}^{@numb@}@numb^2@-@2*numb@|x|+x^2 \, \text{d}x \\ &= \left[@numb^2*x@-@numb*x^2@\text{sign}(x)+\frac{1}{3}x^3\right]_{-@numb@}^{@numb@} \\ &= @integrate((numb-abs(x))^2,x,-numb,numb)@ \end{align*} Note here the function $\text{sign}(x)$ is defined as $1$ for positive $x$, $-1$ for negative $x$ and $0$ for $x=0$. Now we must substitute these into Parseval's theorem. \begin{align*} \frac{1}{2\pi}\int_{-\infty}^{\infty} |\tilde{f}(k)|^2 \, \text{d}k &= \int_{-\infty}^{\infty} |f(x)|^2 \, \text{d}x \\ \int_{-\infty}^{\infty} \frac{16\sin^4(@ev(numb*k/2, simp)@)}{2\pi k^4} \, \text{d}k &= @integrate((numb-abs(x))^2,x,-numb,numb)@ \end{align*} And so we can manipulate this to give the form of $I$ \[ \int_{-\infty}^{\infty} \frac{\sin^4(@ev(numb*k/2, simp)@)}{2\pi k^4} \, \text{d}k = @integrate((numb-abs(x))^2,x,-numb,numb)/16@ \] Hence, $I = @ta1@$.
+\subsubsection{Question Note}
+Find \(\int_{-\infty}^{\infty}\frac{\text{d}k}{2\pi} \, \frac{\sin(@numb*k/2@)^4}{k^4}\) by applying Parseval's theorem to \(f(x) = @fplot@\).
+
+\subsection{Fourier Transform of Dirac Delta Function}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Defining f */
+numb: rand(9)+1;
+f: lambda([x],if (x>=-numb and x<=0) then -1 else if (x>0 and x<=numb) then 1 else 0);
+
+/* Teacher Answer */
+ta1: 2*(1-cos(numb*k));
+\end{lstlisting}
+\subsubsection{Question Text}
+For reference, the expression for the Fourier transform of $f(x)$ is given by \begin{align*}
+\tilde{f}(x) = \int_{-\infty}^{\infty} \text{d}x \, e^{-ikx}f(x)
+\end{align*}The function \(f(x)\) defined by \[ f(x) = \begin{cases} -1 & \text{for } -@numb@ \leq x \leq 0\\ 1 & \text{for } 0 < x \leq @numb@\\ 0 & \text{else} \\ \end{cases} \] has a Fourier transform of \[ \tilde{f}(k) = \frac{2}{ik}(1-\cos(@numb@k)) \] Using this information, or otherwise, complete the expression below for the Fourier transform of the function \[ g(x) = 2\delta(x)-\delta(x-@numb@)-\delta(x+@numb@) \] where \(\delta(x)\) is the Dirac delta function. The answer is a numerical expression involving $k$. A graph of \(f(x)\) has been included below, if you're having trouble visualising the function. 
+
+@plot(f(x),[x,-numb-5,numb+5],[y,-3,3])@
+
+\(\tilde{g}(k) = \) [[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+Remember that \[\delta(x) = \begin{cases} \infty & \text{for } x=0\\ 0 & \text{else} \\ \end{cases} \qquad \text{and} \qquad \int_{-\infty}^{\infty} \delta(x) \, \text{d}x = 1\] Now, can you find a relationship between \(f(x)\) and \(g(x)\)? Perhaps they have a calculus relationship. The above formula may be useful in spotting it.
+\subsubsection{Model Solution}
+After remembering that \[\delta(x) = \begin{cases} \infty & \text{for } x=0\\ 0 & \text{else} \\ \end{cases} \qquad \text{and} \qquad \int_{-\infty}^{\infty} \delta(x) \, \text{d}x = 1\] we see that \[ \int g(x) \, \text{d}x = f(x) \] This may not be obvious at first, but you can consider starting at \(x=-\infty\) on \(g(x)\) and adding up the cumulative area as you move right along the \(x\)-axis to infinity. It remains zero until reaching a Dirac delta peak, where you add/subtract $1$ to the area. You shall see the formula for cumulative area will be traced out by the curve of \(f(x)\).
+
+Now, we must compute the Fourier transform of \(g(x)\). We shall use integration by parts and the relationship between \(g(x)\) and \(f(x)\). \begin{align*} \tilde{g}(k) &= \int_{-\infty}^{\infty} g(x)e^{-ikx} \, \text{d}x \\ &= \left[ f(x)e^{-ikx} \right]_{-\infty}^{\infty} + ik \underbrace{\int_{-\infty}^{\infty} f(x)e^{-ikx} \, \text{d}x}_{\tilde{f}(k)} \\ &= \left[0 - 0 \right] + ik\tilde{f}(k) \\ &= 2(1-\cos(@numb@k)) \end{align*}
+\subsubsection{Question Note}
+Find the Fourier transform of the function \(g(x) = 2\delta(x)-\delta(x-@numb@)-\delta(x+@numb@)\).
+
+\subsection{Integrating Dirac Delta Function of a Function}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Defining g. It has roots 0, an integer, and fraction (non integer) */
+numb: rand(4)+2;
+root1: 0;
+root2: rand_with_prohib(-5,5,[0]);
+root3: rand_with_prohib(-5,5,[0,numb*-5,numb*-4,numb*-3,numb*-2,numb*-1,numb*1,numb*2,numb*3,numb*4,numb*5,root2*numb])/(numb);
+g: ev((x-root1)*(x-root2)*(x-root3),expand);
+diffg: diff(g,x);
+
+/* Teacher Answer */
+ta1: abs(1/(subst(root1,x,diffg))) + abs(1/(subst(root2,x,diffg))) + abs(1/(subst(root3,x,diffg)));
+\end{lstlisting}
+\subsubsection{Question Text}
+Where \(g(x)=@g@\) and \(\delta(x)\) is the Dirac delta-function, find the value of the following integral. \[ I= \int_{-\infty}^{\infty} \text{d}x \, \delta(g(x)) \]The answer is a number or numerical expression. If you choose to give your answer in decimal form, answer to at least two decimal places.
+
+\(I = \) [[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+Recall the following property of the Dirac delta function: For \(g(x)\) with roots \(x_1, x_2, \cdots, x_n\), assuming \(g'(x_k) \neq 0 \) for \(k=1,2,\cdots,n\), then \[ \int_{-\infty}^{\infty} \text{d}x \, \delta(g(x))f(x) = \sum_{k=1}^{n}\frac{f(x_k)}{|g'(x_k)|} \]
+\subsubsection{Model Solution}
+Recall a special property of the Dirac delta function: for \(g(x)\) with roots \(x_1, x_2, \cdots, x_n\), assuming \(g'(x_k) \neq 0 \) for \(k=1,2,\cdots,n\), then \[ \int_{-\infty}^{\infty} \text{d}x \, \delta(g(x))f(x) = \sum_{k=1}^{n}\frac{f(x_k)}{|g'(x_k)|} \] If we let $f(x)=1$, then this is exactly the form of our question. So, we apply this general formula to get \begin{align*} \int_{-\infty}^{\infty} \text{d}x \, \delta(g(x)) &= \sum_{k=1}^{n}\frac{1}{|g'(x_k)|} \\ \end{align*} Now we must factorise \(g(x)\) to find its roots. After taking out a factor of \(@x/numb@\), we reach a regular quadratic, which can be easily factorised \begin{align*} g(x) &= @g@ \\ &= @x/numb@\left(@ev(g/(x/numb),expand)@\right) \\ &= \frac{1}{@numb@}@factor(g*numb)@ \end{align*} So, we find the roots are \(@root1@\), \(@root2@\) and \(@root3@\). Substituting these into the formula, we get \begin{align*} \int_{-\infty}^{\infty} \text{d}x \, \delta(g(x)) &= \sum_{k=1}^{n}\frac{1}{|g'(x_k)|} \\ &= \sum_{x = @root1@, @root2@, @root3@} \frac{1}{|@diffg@|} \\ &= \frac{1}{|@subst(root1,x,diffg)@|} + \frac{1}{|@subst(root2,x,diffg)@|} + \frac{1}{|@subst(root3,x,diffg)@|} \\ &= @ta1@ \end{align*}
+\subsubsection{Question Note}
+Compute\(\int_{-\infty}^{\infty} \text{d}x \, \delta(@g@)\)
+\subsubsection{Feedback Variables}
+\begin{lstlisting}
+/* Feedback Variables */
+nomod: (1/(subst(root1,x,diffg))) + (1/(subst(root2,x,diffg))) + (1/(subst(root3,x,diffg)));
+\end{lstlisting}
+
+\subsection{Square Aperture}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Values using nonstandard units */
+lambda2: rand(60)*5+400;
+d2: rand(5)*5+10;
+
+/* Values using standard units */
+lambda: lambda2*10^(-9);
+d: d2*10^(-6);
+
+/*Intensity*/
+f(x) := 1*(sin( pi * d * sin(x) / (lambda) )/(pi * d * sin(x) / (lambda) ))^2
+
+/* Teacher Answers */
+ta1: asin(lambda/d);
+roundedans: round(asin(lambda/d)*10000)/10000;
+smallangleapprox: lambda/d;
+\end{lstlisting}
+\subsubsection{Question Text}
+Light of wavelength \(@lambda2@\) nanometres is incident on a square aperture of side \(@d2@\) micrometres. The location of the first minimum in the \(x\)-direction of the diffracted intensity occurs at a viewing angle \(\theta\) relative to the central peak in the diffraction pattern, which can be seen in the image below. Give the value for this angle \(\theta\) in radians. You may answer in either exact form or decimal form. If you choose to answer in decimal form, give your answer to at least 3 decimal places. Note that \(\sin^{-1}(x)\) can be typed as asin(x).
+
+[IMAGE HERE: "Test2Q5.png"]
+
+\(\theta = \) [[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+Recall the intensity is given by the formula \begin{align*} I(\theta_x, \theta_y) &= I_0 \text{sinc}^2\left(\frac{\pi d \sin(\theta_x)}{\lambda}\right) \text{sinc}^2\left(\frac{\pi d \sin(\theta_y)}{\lambda}\right) \end{align*} where $I_0$ is the initial intensity, $\text{sinc}(x)=\frac{\sin(x)}{x}$, $\theta_x$ and $\theta_y$ are the viewing angles in the $x$ and $y$ directions respectively, $d$ is the side length, and $\lambda$ the wavelength. Given this, can you find a way of finding the minimum points? The picture provided may show special features of the minimum points to help find them.
+\subsubsection{Model Solution}
+We shall provide a full worked solution, however, if you can remember certain formulae, you may be able to skip out many steps.
+
+The complex amplitude in a square aperture experiment is given by \[ u(\theta_x, \theta_y) = u_0 \text{sinc}\left(\frac{\pi d \sin(\theta_x)}{\lambda}\right) \text{sinc}\left(\frac{\pi d \sin(\theta_y)}{\lambda}\right) \] where \(\text{sinc}(x)=\frac{\sin(x)}{x}\), $u_0$ is the initial amplitude, \(\theta_x\) and \(\theta_y\) are the viewing angles in the \(x\) and \(y\) directions respectively, \(d\) is the side length, and \(\lambda\) the wavelength. The intensity (what we actually see) is given by the magnitude of the complex amplitude squared \begin{align*} I(\theta_x, \theta_y) &= I_0 \text{sinc}^2\left(\frac{\pi d \sin(\theta_x)}{\lambda}\right) \text{sinc}^2\left(\frac{\pi d \sin(\theta_y)}{\lambda}\right) \end{align*} where $I_0$ is the initial intensity. We want to find the viewing angle in the \(x\)-direction at which the first minimum of the intensity occurs. In this case, the minimum intensity occurs if and only if the intensity is zero, seen easily on the graph provided in the question. So, we set this to zero and solve for \(\theta_x\). Noting \(\text{sinc}^2(x) = 0\) has solutions \(n\pi\) for \(n \in \mathbb{Z}\) except at \(n=0\), we get \begin{align*} 0 &= I_0 \text{sinc}^2\left(\frac{\pi d \sin(\theta_x)}{\lambda}\right) \text{sinc}^2\left(\frac{\pi d \sin(\theta_y)}{\lambda}\right) \\ 0 &= \text{sinc}^2\left(\frac{\pi d \sin(\theta_x)}{\lambda}\right) \\ n\pi &= \frac{\pi d \sin(\theta_x)}{\lambda} \\ \sin^{-1}\left( \frac{n \lambda}{d} \right) &= \theta_x \end{align*} So, we have a general angle at which minimums occur. However we want the smallest angle (in magnitude) at which a minimum occurs. So, we minimise this expression through our choice of \(n\), and, after considering the graph of \(\sin^{-1}(x)\), we choose \(n=1\). Hence, \begin{align*} \theta &= \sin^{-1}\left( \frac{\lambda}{d} \right) \\ &= \sin^{-1}\left( \frac{@lambda2@ \times 10^{-9}}{@d2@\times 10^{-6}} \right) \\ &= @ta1@ \\  &\approx @scientific_notation(roundedans)@ \end{align*} A small angle approximation of \(\sin(\theta_x) = \theta_x\) could also have been used to simplify calculations.
+\subsubsection{Question Note}
+Light of wavelength \(@lambda2@\) nanometres is incident on a square aperture of side \(@d2@\) micrometres. Give the value of the angle of the first minimum in the $x$-direction \(\theta\) in radians.
+
+\section{Practice Test 2}
+
+\subsection{Convolution of Dirac Delta Function 2}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Defining function g */
+coef: [rand_with_prohib(-5,5,[-1,0,1]),rand_with_prohib(-5,5,[-1,0,1]),rand_with_prohib(-5,5,[-1,0,1]),rand_with_prohib(1,3,[0,1]),rand_with_prohib(-3,3,[0,1])];
+g: coef[1]*(coef[2]+coef[3]*x^coef[4])^coef[5];
+
+/* Defining function f via its root */
+root: rand(9)+1;
+f: x-root;
+
+/* Teacher Answer */
+ta1:subst(x-root,x,g);
+\end{lstlisting}
+\subsubsection{Question Text}
+For the following functions \begin{align*} f(x)&= \delta(x-@root@) \\ g(x) &= @g@ \end{align*} where \(\delta(x)\) is the Dirac delta function, complete the expression for the convolution \(f(x) \ast g(x)\). The answer is an algebraic expression involving \(x\).
+
+\(f(x) \ast g(x) = \) [[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+It will be useful to recall the following property of the Dirac delta function: 
+
+For a function \(A(x)\) with roots \(x_1, x_2, \cdots, x_n\), assuming \(A'(x_k) \neq 0 \) for \(k=1,2,\cdots,n\), then \[ \int_{-\infty}^{\infty} \text{d}x \, \delta(A(x))B(x) = \sum_{k=1}^{n}\frac{B(x_k)}{|A'(x_k)|} \]
+\subsubsection{Model Solution}
+The formula for a convolution is given by \begin{align*} f(x) \ast g(x) &= \int_{-\infty}^{\infty}\text{d}x' \, f(x')g(x-x') \\ &= \int_{-\infty}^{\infty}\text{d}x' \, \delta(x'-@root@) \cdot @coef[1]@\left(@coef[2]@+@coef[3]@\left(x-x'\right)^{@coef[4]@}\right)^{@coef[5]@} \end{align*} But we see that this is the form of a special property of the Dirac delta function: for a function \(A(x)\) with roots \(x_1, x_2, \cdots, x_n\), assuming \(A'(x_k) \neq 0 \) for \(k=1,2,\cdots,n\), then \[ \int_{-\infty}^{\infty} \text{d}x \, \delta(A(x))B(x) = \sum_{k=1}^{n}\frac{B(x_k)}{|A'(x_k)|} \] So, we apply this general formula to get \begin{align*} f(x) \ast g(x) &= \int_{-\infty}^{\infty}\text{d}x' \, \delta(x'-@root@) \cdot @coef[1]@\left(@coef[2]@+@coef[3]@\left(x-x'\right)^{@coef[4]@}\right)^{@coef[5]@} \\ &= \frac{@subst(x-root,x,g)@}{|@subst(root,x,diff(f,x))@|} \\ &= @ta1@ \end{align*}
+\subsubsection{Question Note}
+Find the convolution of \(f(x)= \delta(@x-root@)\) and \( g(x) = @g@ \).
+
+\subsection{Parseval's Theorem 2}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Defining f */
+numb1: rand(5)+1;
+numb2: rand(5)+1;
+f: lambda([x],if (x>=-numb2 and x<=0) then -numb1 else if (x>0 and x<=numb2) then numb1 else 0);
+
+/* Teacher Answer. Note maxima command integrate is not used because it cannot be computed for some reason */
+ta1: pi*abs(numb2)/4;
+\end{lstlisting}
+\subsubsection{Question Text}
+For reference, the expression for the Fourier transform of $f(x)$ is given by \begin{align*}
+\tilde{f}(x) = \int_{-\infty}^{\infty} \text{d}x \, e^{-ikx}f(x)
+\end{align*}For our definition of the Fourier transform, Parseval's theorem states that \[ \frac{1}{2\pi}\int_{-\infty}^{\infty} |\tilde{f}(k)|^2 \, \text{d}k = \int_{-\infty}^{\infty} |f(x)|^2 \, \text{d}x \]where \(\tilde{f}(k)\) is the Fourier transform of \(f(x)\). By applying Parseval's theorem to the function \[ f(x) = \begin{cases} -@numb1@ & \text{for } -@numb2@ \leq x < 0\\ @numb1@ & \text{for } 0\leq x<@numb2@ \\ 0 & \text{else} \\ \end{cases} \] or otherwise, find the value of the following integral. \[ I = \int_{-\infty}^{\infty}\text{d}k \, \frac{\sin^4(@numb2*k/2@)}{k^2} \] The answer is a number of numerical expression. If you choose to give your answer in decimal form, give it to at least two decimals places. Hint: you should find the double angle identity \(\cos(k) = 2\cos^2(\frac{k}{2}) -1 = 1 - 2\sin^2(\frac{k}{2})\) useful in simplifying you answer to the form of the integral. Note that \(\pi\) can be typed as pi in the answer box. A plot of the function has been provided below, if you're having trouble visualising the function.
+
+@plot(f(x),[x,-2*numb2,2*numb2],[y,-2*numb1,2*numb1])@
+
+\(I = \) [[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+You should try calculating the Fourier transform of \(f(x)\) and manipulating it to be in the form of the integrand of \(I\) upon squaring, and then calculate the right-hand side integral of Parseval's theorem.
+\subsubsection{Model Solution}
+Firstly, we must calculate the Fourier transform. Since the function is partitioned, we can partition the integrals of the Fourier transform similarly \begin{align*} \tilde{f}(k) &= \int_{-\infty}^{\infty} e^{-ikx}f(x) \, \text{d}x\\ &= \int_{-\infty}^{-@numb2@} e^{-ikx}\cdot 0 \, \text{d}x + \int_{-@numb2@}^{0} -@numb1*e^(-i*k*x)@ \, \text{d}x + \int_{0}^{@numb2@} @numb1*e^(-i*k*x)@ \, \text{d}x + \int_{@numb2@}^{\infty} e^{-ikx}\cdot 0 \, \text{d}x \\ &= \int_{-@numb2@}^{0} -@numb1*e^(-i*k*x)@ \, \text{d}x + \int_{0}^{@numb2@} @numb1*e^(-i*k*x)@ \, \text{d}x \end{align*} These integrals can be easily computed \begin{align*} \tilde{f}(k) &= \int_{-@numb2@}^{0} -@numb1*e^(-i*k*x)@ \, \text{d}x + \int_{0}^{@numb2@} @numb1*e^(-i*k*x)@ \, \text{d}x \\ &= \left[\frac{-@numb1@}{-ik}e^{-ikx}\right]_{-@numb2@}^{0} + \left[\frac{@numb1@}{-ik}e^{-ikx}\right]_{0}^{@numb2@} \\ &= \left[\frac{-@numb1@}{ik}(-1 + e^{@numb2*i*k@})\right]+ \left[\frac{@numb1@}{ik}(1-e^{-@numb2*i*k@})\right] \\ &= \frac{@numb1@}{ik} \left( 2 - e^{@numb2*i*k@} - e^{-@numb2*i*k@} \right) \end{align*} And remembering that \(\cos(@numb2*k@) = \frac{1}{2}(e^{@numb2*i*k@} + e^{-@numb2*i*k@})\), we can simplify this to \begin{align*} \tilde{f}(k) &= \frac{@numb1@}{ik} \left( 2 - e^{@numb2*i*k@} - e^{-@numb2*i*k@} \right) \\ &= \frac{@2*numb1@}{ik} \left( 1 - \frac{1}{2}(e^{@numb2*i*k@} + e^{-@numb2*i*k@})\right) \\ &= \frac{@2*numb1@}{ik} \left( 1 - \cos(@numb2*k@)\right) \end{align*}Using the double angle identity \(\cos(k) = 1 - 2\sin^2(\frac{k}{2})\) given as a hint, we find that \(1- \cos(@numb2*k@) = 2\sin^2(@numb2*k/2@)\) and so we have \begin{align*} \tilde{f}(k) &= \frac{@2*numb1@}{ik} \left( 1 - \cos(@numb2*k@)\right) \\ &= \frac{@4*numb1@}{ik} \sin^2\left(@numb2*k/2@\right) \end{align*} Hence, we have the Fourier transform, and, upon squaring, it is in the desired form of the integrand of \(I\) (up to a scalar multiple). Now, we must tackle the right-hand side of Parseval's theorem by computing the integral. We must consider how \(|f(x)|^2\) acts. All the zero values will remain zero, and any other values taken will be the square of $f(x)$. Since the only non-zero values taken by \(f(x)\) are \(@-numb1@\) and \(@numb1@\), the only non-zero value taken by \(|f(x)|^2\) will be \(@numb1^2@\), which will occur on the range \((@-numb2@,@numb2@)\). If you are having trouble visualising this, the graph provided in the question may be helpful. So, \begin{align*} \int_{-\infty}^{\infty} |f(x)|^2 \, \text{d}x &= \int_{-@numb2@}^{@numb2@} |f(x)|^2 \, \text{d}x \\ &= \int_{-@numb2@}^{@numb2@} @numb1^2@ \, \text{d}x \\ &= @2*numb2*numb1^2@ \end{align*} Now, we must substitute these into Parseval's theorem. \begin{align*} \frac{1}{2\pi}\int_{-\infty}^{\infty} |\tilde{f}(k)|^2 \, \text{d}k &= \int_{-\infty}^{\infty} |f(x)|^2 \, \text{d}x \\ \frac{1}{2\pi}\int_{-\infty}^{\infty} \left|\frac{@4*numb1@}{ik} \sin^2\left(@numb2*k/2@\right) \right|^2 \, \text{d}k &= @2*numb2*numb1^2@ \\ \frac{1}{2\pi}\int_{-\infty}^{\infty} \frac{@(4*numb1)^2@\sin^4(@numb2*k/2@)}{k^2} \, \text{d}k &= @2*numb2*numb1^2@ \end{align*} And so, we can manipulate this to give the form of \(I\) \[ \int_{-\infty}^{\infty} \frac{\sin^4(@numb2*k/2@)}{k^2} \, \text{d}k = @2*numb2*(numb1^2)*2*pi/((4*numb1)^2)@ \] Hence, \(I = @ta1@\).
+\subsubsection{Question Note}
+Find \(\int_{-\infty}^{\infty}\text{d}k \, \frac{\sin^4(@numb2*k/2@)}{k^2}\) by applying Parseval's theorem to \(f(x) = @fplot@\).
+
+\subsection{Fourier Transform of Dirac Delta Function 2}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Randomly defining f */
+numb: rand(9)+1;
+height: [1,-1];
+choice: rand(2)+1;
+plotheight: height[choice];
+f: lambda([x], if (x>=-numb and x<=numb) then plotheight else 0);
+
+/* Teacher Answer */
+ta1: height[choice]*2*i*sin(numb*k);
+\end{lstlisting}
+\subsubsection{Question Text}
+For reference, the expression for the Fourier transform of $f(x)$ is given by \begin{align*}
+\tilde{f}(x) = \int_{-\infty}^{\infty} \text{d}x \, e^{-ikx}f(x)
+\end{align*}The function \(f(x)\) defined by \[ f(x) = \begin{cases} @height[choice]@ & \text{for } -@numb@ \leq x \leq @numb@\\ 0 & \text{else} \\ \end{cases} \] has a Fourier transform of \[ \tilde{f}(k) = @height[choice]*2*sin(numb*k)/k@ \] Using this information, or otherwise, complete the expression below for the Fourier transform of the function \[ g(x) = @height[choice]*(\delta(x+numb)-\delta(x-numb))@ \] where \(\delta(x)\) is the Dirac delta function. The answer is a numerical expression, possibly complex, involving \(k\). A graph of \(f(x)\) has been included below, if you're having trouble visualising the function.
+
+@plot(f(x),[x,-numb*2,2*numb],[y,-3,3])@
+
+\(\tilde{g}(k) = \) [[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+Remember that \[\delta(x) = \begin{cases} \infty & \text{for } x=0\\ 0 & \text{else} \\ \end{cases} \qquad \text{and} \qquad \int_{-\infty}^{\infty} \delta(x) \, \text{d}x = 1\] Now, can you find a relationship between \(f(x)\) and \(g(x)\)? Perhaps they have a calculus relationship. The above formula may be useful in spotting it.
+\subsubsection{Model Solution}
+After remembering that \[\delta(x) = \begin{cases} \infty & \text{for } x=0\\ 0 & \text{else} \\ \end{cases} \qquad \text{and} \qquad \int_{-\infty}^{\infty} \delta(x) \, \text{d}x = 1\] we see that \[ \int g(x) \, \text{d}x = f(x) \] This may not be obvious at first, but you can consider starting at \(x=-\infty\) on \(g(x)\) and adding up the cumulative area as you move right along the \(x\)-axis to infinity. It remains zero until reaching a Dirac delta peak, where you add/subtract \(1\) to the area. You shall see the formula for cumulative area will be traced out by the curve of \(f(x)\).
+
+Now, we must compute the Fourier transform of \(g(x)\). We shall use integration by parts and the relationship between \(g(x)\) and \(f(x)\). \begin{align*} \tilde{g}(k) &= \int_{-\infty}^{\infty} g(x)e^{-ikx} \, \text{d}x \\ &= \left[ f(x)e^{-ikx} \right]_{-\infty}^{\infty} + ik \underbrace{\int_{-\infty}^{\infty} f(x)e^{-ikx} \, \text{d}x}_{\tilde{f}(k)} \\ &= \left[0 - 0 \right] + ik\tilde{f}(k) \\ &= @height[choice]*2*i*sin(numb*k)@ \end{align*}
+\subsubsection{Question Note}
+Find the Fourier transform of the function \(g(x) = 2\delta(x)-\delta(x-@numb@)-\delta(x+@numb@)\).
+
+\subsection{Integrating Dirac Delta Function of a Function 2}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Defining g. It takes 3 distinct integer roots (to prevent dg/dx = 0  causing zero error) */
+root1: rand_with_prohib(-5,5,[0]);
+root2: rand_with_prohib(-5,5,[0,root1]);
+root3: rand_with_prohib(-5,5,[0,root1,root2]);
+g: ev((x-root1)*(x-root2)*(x-root3),expand);
+diffg: diff(g,x);
+
+/* Teacher Answer */
+ta1: abs(1/(subst(root1,x,diffg))) + abs(1/(subst(root2,x,diffg))) + abs(1/(subst(root3,x,diffg)));
+\end{lstlisting}
+\subsubsection{Question Text}
+Where \(g(x)=@g@\) and \(\delta(x)\) is the Dirac delta-function, find the value of the following integral. \[ I = \int_{-\infty}^{\infty} \text{d}x \, \delta(g(x)) \]The answer is a number or numerical expression. If you choose to give your answer in decimal form, answer to at least two decimal places.
+
+\(I = \) [[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+Recall the following property of the Dirac delta function: For \(g(x)\) with roots \(x_1, x_2, \cdots, x_n\), assuming \(g'(x_k) \neq 0 \) for \(k=1,2,\cdots,n\), then \[ \int_{-\infty}^{\infty} \text{d}x \, \delta(g(x))f(x) = \sum_{k=1}^{n}\frac{f(x_k)}{|g'(x_k)|} \]
+\subsubsection{Model Solution}
+Recall a special property of the Dirac delta function: for \(g(x)\) with roots \(x_1, x_2, \cdots, x_n\), assuming \(g'(x_k) \neq 0 \) for \(k=1,2,\cdots,n\), then \[ \int_{-\infty}^{\infty} \text{d}x \, \delta(g(x))f(x) = \sum_{k=1}^{n}\frac{f(x_k)}{|g'(x_k)|} \] If we let \(f(x)=1\), then this is exactly the form of our question. So, we apply this general formula to get \begin{align*} \int_{-\infty}^{\infty} \text{d}x \, \delta(g(x)) &= \sum_{k=1}^{n}\frac{1}{|g'(x_k)|} \\ \end{align*}Now we must factorise \(g(x)\) \begin{align*} g(x) &= @g@ \\ &= @factor(g)@ \end{align*}So, we find the roots are \(@root1@\), \(@root2@\) and \(@root3@\). Substituting these into the formula, we get \begin{align*} \int_{-\infty}^{\infty} \text{d}x \, \delta(g(x)) &= \sum_{k=1}^{n}\frac{1}{|g'(x_k)|} \\ &= \sum_{x = @root1@, @root2@, @root3@} \frac{1}{|@diffg@|} \\ &= \frac{1}{|@subst(root1,x,diffg)@|} + \frac{1}{|@subst(root2,x,diffg)@|} + \frac{1}{|@subst(root3,x,diffg)@|} \\ &= @ta1@ \end{align*}
+\subsubsection{Question Note}
+Compute\(\int_{-\infty}^{\infty} \text{d}x \, \delta(@g@)\)
+\subsubsection{Feedback Variables}
+\begin{lstlisting}
+/* Feedback Variables */
+nomod: (1/(subst(root1,x,diffg))) + (1/(subst(root2,x,diffg))) + (1/(subst(root3,x,diffg)));
+\end{lstlisting}
+
+\subsection{Thin Double Slits}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Variables in nonstandard units */
+lambda2: rand(60)*5+400;
+d2: rand(5)*5+10;
+
+/* Variables in standard units */
+lambda: lambda2*10^(-9);
+d: d2*10^(-6);
+
+/* Teacher Answer */
+ta1: asin(lambda/(2*d));
+roundedans: round(asin(lambda/(2*d))*10000)/10000;
+\end{lstlisting}
+\subsubsection{Question Text}
+Light of wavelength \(@lambda2@\) nanometres is incident on a pair of parallel thin slits separated by \(@d2@\) micrometres. The location of the first minimum of the diffracted intensity occurs at a viewing angle \(\theta\) relative to the central peak in the diffraction pattern, which can be seen on the image included below. Give the value for this angle \(\theta\) in radians. You may answer in exact form or decimal form. If you choose to answer in decimal form, give your answer to at least 3 decimal places. Note that \(\sin^{-1}(x)\) can be typed as asin(x). 
+
+[IMAGE HERE: "PracticeTest2Q5.png"]
+
+\(\theta = \) [[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+Recall the intensity is given by the formula \begin{align*} I(\theta) &= I_0\cos^2\left(\frac{ \pi d \sin(\theta)}{\lambda} \right) \end{align*} where \(I_0\) is the initial intensity, \(\theta\) is the viewing angle, \(d\) is the distance between slits, and \(\lambda\) the wavelength. Given this, can you find a way of finding the minimum points? The picture provided may show special features of the minimum points to help find them.
+\subsubsection{Model Solution}
+We shall provide a full worked solution, however, if you can remember certain formulae, you may be able to skip out many steps.
+
+The complex amplitude in a thin double slit experiment is given by \[ u(\theta) = u_0 \cos\left(\frac{\pi d \sin(\theta)}{\lambda}\right) \] where \(u_0\) is the initial amplitude, \(\theta\) is the viewing angle, \(d\) is the distance between slits, and \(\lambda\) the wavelength. The intensity (what we actually see) is given by the magnitude of the complex amplitude squared \begin{align*} I(\theta) &= I_0\cos^2\left(\frac{ \pi d \sin(\theta)}{\lambda} \right) \end{align*} where \(I_0\) is the initial intensity. We want to find the viewing angle at which the first minimum of the intensity occurs. In this case, the minimum intensity occurs if and only if the intensity is zero, seen easily on the graph provided in the question. So, we set this to zero and solve for \(\theta\). Noting \(\cos^2(x) = 0\) has solutions \(n\pi + \frac{\pi}{2}\) for \(n \in \mathbb{Z}\), we get \begin{align*} 0 &= I_0\cos^2\left(\frac{ \pi d \sin(\theta)}{\lambda} \right) \\ n\pi + \frac{\pi}{2} &= \frac{ \pi d \sin(\theta)}{\lambda} \\ \sin^{-1}\left( \frac{\lambda (n+\frac{1}{2})}{d} \right) &= \theta \end{align*} So, we have a general angle at which minimums occur. However, we want the smallest angle (in magnitude) at which a minimum occurs. So, we minimise this expression through our choice of \(n\), and after considering the graph of \(\sin^{-1}(x)\), we choose \(n=0\). Hence \begin{align*} \theta &= \sin^{-1}\left( \frac{\lambda}{2d} \right) \\ &= \sin^{-1}\left( \frac{@lambda2@ \times 10^{-9}}{@2*d2@\times 10^{-6}} \right) \\ &= @ta1@ \\  &\approx @scientific_notation(roundedans)@ \end{align*} A small angle approximation of \(\sin(\theta) = \theta\) could also have been used to simplify calculations.
+\subsubsection{Question Note}
+Light of wavelength \(@lambda2@\) nanometres is incident on a pair of parallel thin slits separated by \(@d2@\) micrometres. Give the value for the angle of the first minimum \(\theta\) in radians.
+\subsubsection{Feedback Variables}
+\begin{lstlisting}
+/* Feedback Variables */
+smallangleapprox: lambda/(2*d);     /* gives marks if small angle approximation is used */
+\end{lstlisting}
+
+\section{Test 3}
+\subsection{Diffraction Pairing}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* This question was impossible to randomise */
+
+/* Teacher Answer */
+ta: [A,D,B,C,F,E];
+lowerc: [a,d,b,c,f,e];
+\end{lstlisting}
+\subsubsection{Question Text}
+The pictures below are Fraunhofer diffraction patterns from 2D apertures. The images are negatives, i.e. dark regions correspond to high diffracted intensity, light regions to low intensity. The intensity is shown as a function of the deflection angles $X = \frac{x_1}{D}$ and $Y = \frac{y_1}{D}$, where $D$ is the distance from the aperture. For each of the apertures described below, give the letter corresponding to the appropriate diffraction pattern. All aperture dimensions ($w_1 $, $w_2$) etc. are given in units of the wavelength of the light, $\lambda$.
+
+[IMAGE HERE: "Test3Q1.png"]
+
+Type in the letter of the picture matching to each statement.
+
+A rectangular aperture, dimensions ($w_1 $, $w_2$) = ($20$, $10$).   [[input:ans1]][[validation:ans1]]
+
+A rectangular aperture, dimensions ($w_1$, $w_2$) = ($10$, $20$).   [[input:ans2]][[validation:ans2]]
+
+Several square apertures, dimensions ($w_1 $, $w_2$) $=$ ($20$, $20$), regularly spaced along the $y$-axis with their centres $L=50$ apart.   [[input:ans3]][[validation:ans3]]
+
+Several square apertures, dimensions ($w_1 $, $w_2$) $=$ ($20$, $20$) , regularly spaced along the $x$-axis with their centres $L=50$ apart.   [[input:ans4]][[validation:ans4]]
+
+A square aperture dimensions ($w_1 $, $w_2$) $=$ ($20$, $20$).   [[input:ans5]][[validation:ans5]] 
+
+A circular aperture, diameter $w=20$.   [[input:ans6]][[validation:ans6]] [[feedback:prt1]]
+\subsubsection{Hint}
+This question is standard bookwork. Try looking at your lecture notes for help.
+\subsubsection{Model Solution}
+This question is standard bookwork. For details of why the patterns are produced, look at your lecture notes.
+\subsubsection{Question Note}
+Match the diffraction pattern with the aperture.
+
+\subsection{Lagrange Multipliers True or False}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Defining f */
+fcoefx: rand_with_prohib(-5,5,[0]);
+fcoefy: rand_with_prohib(-5,5,[0]);
+f: fcoefx*x^2 + fcoefy*y^2;
+
+/* Defining g */
+funcs: [sin,cos,tan,log];     /* We ignore exp intentionally as it may equal our other possible answers */
+funcnumb1: 1+rand(4);
+funcnumb2: 1+rand(4);
+gcoefx1: rand_with_prohib(-5,5,[0]);
+gcoefx2: rand_with_prohib(-5,5,[0]);
+gcoefy1: rand_with_prohib(-5,5,[0]);
+gcoefy2: rand_with_prohib(-5,5,[0]);
+g: gcoefx1*funcs[funcnumb1](gcoefx2*x) + gcoefy1*funcs[funcnumb2](gcoefy2*y);
+
+/* List of equations and their respective true/false */
+eq:[diff(f,x) = \lambda * gcoefx1*funcs[funcnumb1](gcoefx2*x), diff(f,x) = \lambda * diff(g,x), diff(f,y) = \lambda * gcoefy1*funcs[funcnumb2](gcoefy2*y), diff(f,y) = \lambda * diff(g,y), f - \lambda * g = 0, g = 0];
+TorF: [is(1=0),is(1=1),is(1=0),is(1=1),is(1=0),is(1=1)];
+
+/* Used to randomise order of appearance in list */
+numb1: rand(6)+1;
+numb2: rand_with_prohib(1,6,[numb1]);
+numb3: rand_with_prohib(1,6,[numb1,numb2]);
+numb4: rand_with_prohib(1,6,[numb1,numb2,numb3]);
+numb5: rand_with_prohib(1,6,[numb1,numb2,numb3,numb4]);
+numb6: rand_with_prohib(1,6,[numb1,numb2,numb3,numb4,numb5]);
+
+/* Teacher Answers */
+ta: [TorF[numb1],TorF[numb2],TorF[numb3],TorF[numb4],TorF[numb5],TorF[numb6]];
+\end{lstlisting}
+\subsubsection{Question Text}
+A function $f(x,y) = @f@$ is to be minimised subject to the constraint $g(x,y) = @g@ = 0$ by the method of Lagrange multipliers. The solution can be obtained by simultaneously solving a set of three equations in three unknowns $x$, $y$ and $\lambda$.
+
+For each of the following equations, select true if it is one of the simultaneous equations to be solved, and select false if it is not.
+
+\( @eq[numb1]@ \)   [[input:ans1]][[validation:ans1]]
+
+\( @eq[numb2]@ \)   [[input:ans2]][[validation:ans2]]
+
+\( @eq[numb3]@ \)   [[input:ans3]][[validation:ans3]]
+
+\( @eq[numb4]@ \)   [[input:ans4]][[validation:ans4]]
+
+\( @eq[numb5]@ \)   [[input:ans5]][[validation:ans5]]
+
+\( @eq[numb6]@ \)   [[input:ans6]][[validation:ans6]][[feedback:prt1]]
+\subsubsection{Hint}
+Remember the key formula for Lagrange multipliers, which is as follows \begin{align*} \nabla f &= \lambda \nabla g \\ \left(\frac{\partial f}{\partial x},\frac{\partial f}{\partial y} \right) &= \lambda \left( \frac{\partial g}{\partial x}, \frac{\partial g}{\partial y} \right) \end{align*} Partially differentiate $f(x,y)$ and $g(x,y)$ with respect to both $x$ and $y$, substitute them into the formula above, and then equate the components to get your simultaneous equations.
+\subsubsection{Model Solution}
+We set up the simultaneous equations we must solve \begin{align*} \nabla f &= \lambda \nabla g \\ \left( \frac{\partial f}{\partial x},  \frac{\partial f}{\partial y} \right) &= \lambda \left( \frac{\partial g}{\partial x},  \frac{\partial g}{\partial y} \right) \\ \left( @diff(f,x)@,  @diff(f,y)@ \right) &= \lambda \left( @diff(g,x)@,  @diff(g,y)@ \right) \end{align*} Hence, by equating the components and remembering the original constraint, our equations are \begin{align*} @diff(f,x)@ &= @\lambda * diff(g,x)@ \\ @diff(f,y)@ &= @\lambda * diff(g,y)@ \\ @g@ &= 0 \end{align*}
+\subsubsection{Question Note}
+Find the Lagrange multiplier simultaneous equations which must be solved to minimise @f@ subject to the constraint of @g=0@.
+
+\subsection{Lagrange Multipliers Example}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Defining coefficients of f and g. Some coefficients have been defined in terms of their negatives. They have been chosen such that most solutions are rational, and no complex numbers occur */
+cofx: rand_with_prohib(0,3,[0]);
+cofy: rand_with_prohib(0,5,[0,1]);
+cogx: rand_with_prohib(-3,3,[0])^3;
+cogy: rand_with_prohib(0,2,[0])^2;
+const: if (1 + cogx*(2*cofx*cogy/(-3*cofy*cogx))^3 >= 0) then rand_with_prohib(0,2,[0])^6 else  rand_with_prohib(0,2,[0,1])^6;
+
+/* Defining f and g */
+f: cofx*x^2 + cofy*y^2;
+g: -cogx*x^3 + cogy*y^2 -const;
+
+/* Solutions to sim eqns */
+x1: (-const/cogx)^(1/3);
+x2: 0;
+x3: 2*cofx*cogy/(-3*cofy*cogx);
+y1: 0;
+y2: ev(sqrt(const/cogy),expand,simp);
+y3: ev(sqrt((const+cogx*(x3)^3)/cogy),expand,simp);
+yround3: scientific_notation(round(y3*100)/100);
+
+/* Finding out Teacher Answer */
+sol1: subst(y1,y,subst(x1,x,f));
+sol2: subst(y2,y,subst(x2,x,f));
+sol3: subst(y3,y,subst(x3,x,f));
+sollist: sort([sol1, sol2, sol3]);
+
+/* Teacher Answer */
+ta1: sollist[1];
+\end{lstlisting}
+\subsubsection{Question Text}
+Find the minimum of the function \(f(x,y) = @f@\) subject to the constraint \(g(x,y) = @g@ = 0\). If you choose to answer in decimal form, give your answer to at least two decimal places.
+
+Minimum of \(f(x,y) = \) [[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+Remember the key formula for Lagrange multipliers, which is as follows \begin{align*} \nabla f &= \lambda \nabla g \\ \left(\frac{\partial f}{\partial x},\frac{\partial f}{\partial y} \right) &= \lambda \left( \frac{\partial g}{\partial x}, \frac{\partial g}{\partial y} \right) \end{align*} Partially differentiate $f(x,y)$ and $g(x,y)$ with respect to both $x$ and $y$, substitute them into the formula above, and then equate the components to get your simultaneous equations, which you should solve.
+\subsubsection{Model Solution}
+We set up the simultaneous equations we must solve \begin{align*} \nabla f &= \lambda \nabla g \\ \left(@diff(f,x)@, @diff(f,y)@ \right) &= \lambda \left(@diff(g,x)@, @diff(g,y)@ \right) \end{align*} Hence, the simultaneous equations we must solve are \begin{align*} @diff(f,x)@ &= @\lambda * diff(g,x)@ \\ @diff(f,y)@ &= @\lambda * diff(g,y)@ \\ @g@ &= 0 \end{align*} It may be tempting here to divide through by \(x\) in the first equation, or by \(y\) in second equation, but we must be careful! Remember that \(x\) or \(y\) could be zero, which would invalidate such a manipulation. Instead, we must consider different cases.
+
+\(\underline{\textbf{Case 1: } y=0}\)
+Considering the third equation, we find \(x=@x1@\). Hence, one solution is \(\left(@x1@,0\right)\). We could have found \(\lambda\) in this case, though there was no need to.
+
+\(\underline{\textbf{Case 2: } y\neq0}\)
+Now we are able to divide through by \(y\) in the second equation, and so we find \(\lambda = @cofy/cogy@\). Again, we must consider more cases.
+
+\(\underline{\textbf{Case 2a: } x=0}\)
+Considering the third equation, we find \(y= \pm @y2@\). Hence, another solution(s) is \(\left(0,\pm @y2@\right)\).
+
+\(\underline{\textbf{Case 2b: } x \neq 0}\)
+Now we are able to divide through by \(x\) in the first equation, and so we find \(x = @x3@\). Now, considering the third equation, we find \(y = \pm  \sqrt{@(const+cogx*(x3)^3)/cogy@} \approx \pm @yround3@ \). So, the last solution(s) is \(\left(@x3@,\pm @yround3@\right)\).
+
+So, we have all the solutions to the simultaneous equations, which are all the local minimums and maximums. However, we wish to find the global minimum subject to the constraint. So, we must substitute the solutions into \(f(x,y)\) and see which is smallest. \begin{align*} f\left(@x1@,@y1@\right) &= @sol1@ \\ f\left(@x2@,\pm @y2@\right) &= @sol2@ \\ f\left(@x3@,\pm @yround3@\right) &= @sol3@ \end{align*} Hence, subject to the constraint of \(g(x,y)=0\), the minimum of \(f(x,y)\) is \(@ta1@\).
+\subsubsection{Question Note}
+Find the minimum of the function \(f(x,y) = @f@\) subject to the constraint \(g(x,y) = @g@ = 0\).
+
+\subsection{Einstein Summation Example}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Defining vectors a and b, and matrix M. Some are chosen to be non-zero so we don't zero vectors */
+avect: [rand_with_prohib(-9,9,[0]), rand(19)-9];
+bvect: [rand(19)-9, rand_with_prohib(-9,9,[0])];
+m1: rand(19)-9;
+m2: rand(19)-9;
+m3: rand_with_prohib(-9,9,[m2]);     /* If m2=/=m3, then aMb =/=bMa always, so student errors show */
+m4: rand(19)-9;
+
+/* Case Notation */
+numb: rand(2)+1;     /* Case deciding number */
+aiorj: [i,j];
+biorj: [j,i];
+asub: aiorj[numb];     /* Subscript on a */
+bsub: biorj[numb];
+leftorright: [a,b];
+rightorleft: [b,a];
+l: leftorright[numb];     /* Letter of vector on left of matrix M in working */
+r: rightorleft[numb];
+leftorrightvect: [avect,bvect];
+rightorleftvect: [bvect,avect];
+lvect: leftorrightvect[numb];     /* Vector on left of matrix M in working */
+rvect: rightorleftvect[numb];
+
+/* Teacher Answer */
+ta1: lvect[1]*(m1*rvect[1]+m2*rvect[2]) + lvect[2]*(m3*rvect[1]+m4*rvect[2]);
+\end{lstlisting}
+\subsubsection{Question Text}
+For the vectors \(\textbf{a}\) and \(\textbf{b}\), and the matrix \(\textbf{M}\), given by \[ \textbf{a} = \left(\begin{matrix} @avect[1]@ & @avect[2]@ \end{matrix}\right) \qquad \textbf{b} = \left(\begin{matrix} @bvect[1]@ & @bvect[2]@ \end{matrix}\right) \qquad \textbf{M} = \left( \begin{matrix} @m1@ & @m2@ \\ @m3@ & @m4@ \end{matrix} \right) \] what is the value of \(M_{ij}a_{@asub@}b_{@bsub@}\) using Einstein summation convention? 
+
+\(M_{ij}a_{@asub@}b_{@bsub@} = \) [[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+Recall the definition of Einstein summation convention \begin{align*} M_{ij}a_{@asub@}b_{@bsub@} &= @l@_i M_{ij} @r@_j \\ &=\sum_{i}\sum_{j} @l@_i M_{ij} @r@_j \end{align*} Using your knowledge of matrices, can you rewrite this summation as a matrix multiplication in terms of \(\textbf{a}\), \(\textbf{b}\) and \(\textbf{M}\)?
+\subsubsection{Model Solution}
+We work from the definition of Einstein summation convention and use matrix multiplication as follows \begin{align*} M_{ij}a_{@asub@}b_{@bsub@} &= @l@_i M_{ij} @r@_j \\ &=\sum_{i}\sum_{j} @l@_i M_{ij} @r@_j \\ &= \textbf{@l@} \cdot \textbf{M} \cdot \textbf{@r@}^{\text{T}} \\ &= \left(\begin{matrix} @lvect[1]@ & @lvect[2]@ \end{matrix}\right) \left(\begin{matrix} @m1@ & @m2@ \\ @m3@ & @m4@ \end{matrix}\right) \left(\begin{matrix} @rvect[1]@ \\ @rvect[2]@ \end{matrix}\right) \\ &= \left(\begin{matrix} @lvect[1]@ & @lvect[2]@ \end{matrix}\right) \left(\begin{matrix} @m1*rvect[1]+m2*rvect[2]@ \\ @m3*rvect[1]+m4*rvect[2]@ \end{matrix}\right) \\ &= @ta1@ \end{align*}
+\subsubsection{Question Note}
+Find \(M_{ij}a_{@asub@}b_{@bsub@}\) where \(\textbf{a} = @avect@\), \(\textbf{b} = @bvect@\), \(\textbf{M} = \left( \begin{matrix} @m1@ & @m2@ \\ @m3@ & @m4@ \end{matrix} \right)\).
+\subsubsection{Feedback Variables}
+\begin{lstlisting}
+/* Feedback Variables */
+wrongway: rvect[1]*(m1*lvect[1]+m2*lvect[2]) + rvect[2]*(m3*lvect[1]+m4*lvect[2]);
+\end{lstlisting}
+
+\subsection{Einstein Summation True or False}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* List of equations and their respective true/false */
+eq: [b[j] = a[i] . M[i*j],a[i] = b[j] / M[i*j],b[j] = M[i*j] . a[i],M[i*j] = b[j] / a[i],b[i] = a[j] . M[j*i],b[i] = M[i*j] . a[j],b[k] = a[m] . M[m*k]];
+TorF: [is(1=1),is(1=0),is(1=1),is(1=0),is(1=1),is(1=0),is(1=1)];
+
+/* Used to randomise order of appearance in list */
+numb1: rand(4)*2+1;     /* First equation is always true, so pick odd number */
+numb2: rand_with_prohib(1,7,[numb1]);
+numb3: rand_with_prohib(1,7,[numb1,numb2]);
+numb4: rand_with_prohib(1,7,[numb1,numb2,numb3]);
+numb5: rand_with_prohib(1,7,[numb1,numb2,numb3,numb4]);
+numb6: rand_with_prohib(1,7,[numb1,numb2,numb3,numb4,numb5]);
+numb7: rand_with_prohib(1,7,[numb1,numb2,numb3,numb4,numb5,numb6]);
+
+/* Teacher Answers */
+ta: [TorF[numb2],TorF[numb3],TorF[numb4],TorF[numb5],TorF[numb6],TorF[numb7]];
+\end{lstlisting}
+\subsubsection{Question Text}
+The following equation is written in the Einstein summation convention \[ @eq[numb1]@ \] For each of the following equations, select true if it is equivalent to this, and select false if it is not equivalent to this.
+
+The follow equations are equivalent to \(@eq[numb1]@\). True or false?
+
+\( @eq[numb2]@ \)   [[input:ans1]][[validation:ans1]]
+
+\( @eq[numb3]@ \)   [[input:ans2]][[validation:ans2]]
+
+\( @eq[numb4]@ \)   [[input:ans3]][[validation:ans3]]
+
+\( @eq[numb5]@ \)   [[input:ans4]][[validation:ans4]]
+
+\( @eq[numb6]@ \)   [[input:ans5]][[validation:ans5]]
+
+\( @eq[numb7]@ \)   [[input:ans6]][[validation:ans6]][[feedback:prt1]]
+\subsubsection{Hint}
+Recall the definition of Einstein summation convention. Here is an example of it in use \begin{align*} M_{ij}a_j &= \sum_{j} M_{ij} a_j \\ &= \textbf{M} \cdot \textbf{a} \end{align*}
+\subsubsection{Model Solution}
+The equations \begin{align*} \left. \begin{aligned} b_j &= a_i M_{ij} \quad \\ b_j &= M_{ij} a_i \\ b_i &= a_j M_{ji} \\ b_k &= a_m M_{mk} \end{aligned} \right\} \quad \text{equivalent to} \quad b_j = \sum_i a_i M_{ij} \quad\text{and} \quad \textbf{b} = \textbf{a} \cdot \textbf{M} \\ \end{align*} are all equivalent. Einstein summation convention means that the order of terms does not matter, hence the first and second equations are equivalent. Moreover, the letter used to represent each index does not matter, hence the first and third equations are equivalent, as \(i\) has been switched with \(j\). Similarly, the first and fourth equations are equivalent, as we are simply using the letters \(k\) and \(m\) in place of \(j\) and \(i\) respectively.
+
+The equations \begin{align*} a_i = \frac{b_j}{M_{ij}} \\ M_{ij} = \frac{b_j}{a_i} \\ b_i = M_{ij} a_j \end{align*} are not equivalent to the others. The first and second equations use incorrect notation; you cannot 'divide through' by a matrix or vector, you can only take inverses of non-singular matrices. The last equation is not equivalent, as the notation works as follows \begin{align*} b_i = M_{ij} a_j \quad \text{equivalent to} \quad b_i = \sum_j M_{ij} a_j \quad \text{and} \quad \textbf{b} = \textbf{M} \cdot \textbf{a} \end{align*} which is a different sum to that described in the previous, equivalent equations.
+\subsubsection{Question Note}
+Select true and false as to which equations are equivalent to $@eq[numb1]@$.
+
+\section{Practice Test 3}
+\subsection{Diffraction Pairing 2}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+/* This question was impossible to randomise */
+
+/* Teacher Answers */
+ta: [C,B,D,A];
+lowerc: [c,b,d,a];
+\end{lstlisting}
+\subsubsection{Question Text}
+The pictures below are plots of intensity versus deflection angle $X = \frac{x_1}{D}$, where $D$ is the distance from the aperture, for Fraunhofer diffraction patterns for thin or thick slits in a screen. For each of the slits described below, give the letter corresponding to the appropriate diffraction pattern. The aperture dimension, $w$, is given in units of the wavelength of light, $\lambda$.
+
+[IMAGE HERE: "PracticeTest3Q1.png"]
+
+Type in the letter of the picture matching to each statement.
+
+Two parallel thin slits a distance $w=20$ apart.   [[input:ans1]][[validation:ans1]]
+
+Three parallel thin slits equally separated by $w=20$.   [[input:ans2]][[validation:ans2]]
+
+A single slit of width $w=20$.   [[input:ans3]][[validation:ans3]]
+
+A single slit of width $w=10$.   [[input:ans4]][[validation:ans4]][[feedback:prt1]]
+\subsubsection{Hint}
+This question is standard bookwork. Try looking at your lecture notes for help.
+\subsubsection{Model Solution}
+This question is standard bookwork. For details of why the patterns are produced, look at your lecture notes.
+\subsubsection{Question Note}
+Match the diffraction pattern with the aperture.
+
+\subsection{Lagrange Multipliers Example 2}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Defining f and g. Coefficients are chosen such that we never encounter irrationals */
+a: rand_with_prohib(-5,5,[0]);
+b: rand_with_prohib(-5,5,[0]);
+c: b*(rand_with_prohib(0,4,[0]))^2 + a^2/(2*b);
+f: x^2 + y^2;
+g: a*x + b*y^2 - c;
+
+/* Solutions to sim eqns */
+x1: c/a;
+x2: a/(2*b);
+y1: 0;
+y2: ev(sqrt((c-a*(a/(2*b)))/(b)),expand,simp);
+
+/* Ordering solutions by size */
+sol1: subst(y1,y,subst(x1,x,f));
+sol2: subst(y2,y,subst(x2,x,f));
+sollist: sort([sol1, sol2]);
+
+/* Teacher Answer */
+ta1: sollist[1];
+\end{lstlisting}
+\subsubsection{Question Text}
+Find the minimum of the function \(f(x,y) = @f@\) subject to the constraint \(g(x,y) = @g@ = 0\). If you choose to answer in decimal form, give your answer to at least two decimal places.
+
+Minimum of \(f(x,y) = \) [[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+Remember the key formula for Lagrange multipliers, which is as follows \begin{align*} \nabla f &= \lambda \nabla g \\ \left(\frac{\partial f}{\partial x},\frac{\partial f}{\partial y} \right) &= \lambda \left( \frac{\partial g}{\partial x}, \frac{\partial g}{\partial y} \right) \end{align*} Partially differentiate \(f(x,y)\) and \(g(x,y)\) with respect to both \(x\) and \(y\), substitute them into the formula above, and then equate the components to get your simultaneous equations, which you should solve.
+\subsubsection{Model Solution}
+We set up the simultaneous equations we must solve \begin{align*} \nabla f &= \lambda \nabla g \\ \left( @diff(f,x)@,  @diff(f,y)@ \right) &= \lambda \left( @diff(g,x)@,  @diff(g,y)@ \right) \end{align*} Hence, our equations are \begin{align*} @diff(f,x)@ &= @\lambda * diff(g,x)@ \\ @diff(f,y)@ &= @\lambda * diff(g,y)@ \\ @g@ &= 0 \end{align*} It may be tempting here to divide through by \(y\) in the second equation, but we must be careful! Remember that \(y\) could be zero, which would invalidate such a manipulation. Instead, we must consider different cases.
+
+\(\underline{\textbf{Case 1: } y=0}\)
+Considering equation the third equation, we find \(x=@x1@\). Hence, one solution is \(\left(@x1@,0\right)\). We could have found \(\lambda\) in this case, though there was no need to.
+
+\(\underline{\textbf{Case 2: } y\neq0}\)
+Now we are able to divide through by \(y\) in the second equation, and so we find \(\lambda = @1/b@\). Now we are able to find \(x\) by using the first equation, and so we find \(x = @x2@\). Now, considering the third equation, we find \(y = \pm @y2@ \). So, the last solution(s) is \(\left(@x2@,\pm @y2@\right)\).
+
+So, we have all the solutions to the simultaneous equations, which are all the local minimums and maximums. However, we wish to find the global minimum subject to the constraint. So, we must substitute the solutions into \(f(x,y)\) and see which is smallest. \begin{align*} f\left(@x1@,@y1@\right) &= @sol1@ \\ f\left(@x2@,\pm @y2@\right) &= @sol2@ \end{align*} Hence, subject to the constraint of \(g(x,y)=0\), the minimum of \(f(x,y)\) is \(@ta1@\).
+\subsubsection{Question Note}
+Find the minimum of the function \(f(x,y) = @f@\) subject to the constraint \(g(x,y) = @g@ = 0\).
+
+\subsection{Lagrange Multipliers True or False 2}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Defining f */
+f: x^2 + y^2;
+
+/* Defining g */
+coefx: rand_with_prohib(-5,5,[0]);
+coefy: rand_with_prohib(-5,5,[0]);
+powx: rand_with_prohib(1,5,[0]);
+powy: rand_with_prohib(1,5,[0]);
+const: rand_with_prohib(-9,9,[0]);
+g: coefx*x^(powx) + coefy*y^(powy) + const;
+
+/* List of equations and their respective true/false */
+eq: [diff(f,x) = \lambda * coefx*x^(powx), diff(f,x) = \lambda * diff(g,x), diff(f,y) = \lambda * coefy*y^(powy), diff(f,y) = \lambda * diff(g,y), f - \lambda * g = 0, g = 0];
+TorF: [is(1=0),is(1=1),is(1=0),is(1=1),is(1=0),is(1=1)];
+
+/* Used to randomise order of appearance in list */
+numb1: rand(6)+1;
+numb2: rand_with_prohib(1,6,[numb1]);
+numb3: rand_with_prohib(1,6,[numb1,numb2]);
+numb4: rand_with_prohib(1,6,[numb1,numb2,numb3]);
+numb5: rand_with_prohib(1,6,[numb1,numb2,numb3,numb4]);
+numb6: rand_with_prohib(1,6,[numb1,numb2,numb3,numb4,numb5]);
+
+/* Teacher Answers */
+ta: [TorF[numb1],TorF[numb2],TorF[numb3],TorF[numb4],TorF[numb5],TorF[numb6]];
+\end{lstlisting}
+\subsubsection{Question Text}
+A function $f(x,y) = @f@$ is to be minimised subject to the constraint $g(x,y) = @g@ = 0$ by the method of Lagrange multipliers. The solution can be obtained by simultaneously solving a set of three equations in three unknowns $x$, $y$ and $\lambda$.
+
+For each of the following equations, select true if it is one of the simultaneous equations to be solved, and select false if it is not.
+
+\( @eq[numb1]@ \)   [[input:ans1]][[validation:ans1]]
+
+\( @eq[numb2]@ \)   [[input:ans2]][[validation:ans2]]
+
+\( @eq[numb3]@ \)   [[input:ans3]][[validation:ans3]]
+
+\( @eq[numb4]@ \)   [[input:ans4]][[validation:ans4]]
+
+\( @eq[numb5]@ \)   [[input:ans5]][[validation:ans5]]
+
+\( @eq[numb6]@ \)   [[input:ans6]][[validation:ans6]][[feedback:prt1]]
+\subsubsection{Hint}
+Remember the key formula for Lagrange multipliers, which is as follows \begin{align*} \nabla f &= \lambda \nabla g \\ \left(\frac{\partial f}{\partial x},\frac{\partial f}{\partial y} \right) &= \lambda \left( \frac{\partial g}{\partial x}, \frac{\partial g}{\partial y} \right) \end{align*} Partially differentiate \(f(x,y)\) and \(g(x,y)\) with respect to both \(x\) and \(y\), substitute them into the formula above, and then equate the components to get your simultaneous equations.
+\subsubsection{Model Solution}
+We set up the simultaneous equations we must solve \begin{align*} \nabla f &= \lambda \nabla g \\ \left( \frac{\partial f}{\partial x}, \frac{\partial f}{\partial y} \right) &= \lambda \left( \frac{\partial g}{\partial x}, \frac{\partial g}{\partial y} \right) \\ \left( @diff(f,x)@, \,  @diff(f,y)@ \right) &= \lambda \left( @diff(g,x)@, \,   @diff(g,y)@ \right) \end{align*} Hence, by equating the components and remembering the original constraint, our equations are \begin{align*} @diff(f,x)@ &= @\lambda * diff(g,x)@ \\ @diff(f,y)@ &= @\lambda * diff(g,y)@ \\ @g@ &= 0 \end{align*}
+\subsubsection{Question Note}
+Find the Lagrange multiplier simultaneous equations which must be solved to minimise @f@ subject to the constraint of @g=0@.
+
+\subsection{Einstein Summation Example 2}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* Defining vector a (called avect) and matrix M (called mat) */
+avect: [rand(19)-9, 0];
+avect[2]: rand_with_prohib(-9,9,[avect[1]]);     /* Ensures no zero vectors */
+mat: [[rand_with_prohib(-9,9,[0]),rand_with_prohib(-9,9,[0])],[rand_with_prohib(-9,9,[0]),rand_with_prohib(-9,9,[0])]];     /* Indices are non zero to ensure sum is not trivially zero */
+
+/* Defines case */
+numb: rand(2)+1;
+
+/* Defined by the case */
+left: [i, rand(2)+1];     
+leftsum: [[1,2] , [left[2],left[2]]];     /* used in working to find sum */
+right: [rand(2)+1, i];
+rightsum: [[right[1],right[1]],[1,2]];
+Mleft: left[numb];     /* index of M in question */
+Mright: right[numb];
+
+/* Teacher Answer */
+ta1: mat[leftsum[numb][1]][rightsum[numb][1]]*avect[1] + mat[leftsum[numb][2]][rightsum[numb][2]]*avect[2];
+\end{lstlisting}
+\subsubsection{Question Text}
+For the vector \(\textbf{a}\) and the matrix \(\textbf{M}\), where \[ \textbf{a} = \left(\begin{matrix} @avect[1]@ & @avect[2]@ \end{matrix}\right) \qquad \textbf{M} = \left( \begin{matrix} @mat[1][1]@ & @mat[1][2]@ \\ @mat[2][1]@ & @mat[2][2]@ \end{matrix} \right) \] what is the value of \(M_{@Mleft@ @Mright@}a_{i}\) using Einstein summation convention?
+
+\(M_{@Mleft@ @Mright@}a_{i} = \) [[input:ans1]][[validation:ans1]][[feedback:prt1]]
+\subsubsection{Hint}
+Recall the definition of Einstein summation convention \begin{align*} M_{ij}a_{j} &=\sum_{j} M_{ij}a_{j} \end{align*} Using this general form, can you find the sum by using our given values for \(M_{ij}\) and \(a_{i}\)?
+\subsubsection{Model Solution}
+We work from the definition of Einstein summation convention to get \begin{align*} M_{@Mleft@  @Mright@}a_{i} &=\sum_{i} M_{@Mleft@  @Mright@}a_{i} \\ &= M_{@leftsum[numb][1]@ @rightsum[numb][1]@}a_1 + M_{@leftsum[numb][2]@  @rightsum[numb][2]@}a_2 \\ &= @mat[leftsum[numb][1]][rightsum[numb][1]]@\cdot@avect[1]@ + @mat[leftsum[numb][2]][rightsum[numb][2]]@\cdot@avect[2]@ \\ &= @ta1@ \end{align*}
+\subsubsection{Question Note}
+Find the value of \(M_{@Mleft@  @Mright@}a_{i}\) where \(a=@avect@\) and \(M = @mat@\).
+
+\subsection{Einstein Summation True or False 2}
+\subsubsection{Question Variables}
+\begin{lstlisting}
+powerdisp:true;
+
+/* List of equations and their respective true/false */
+eq: [A[jj], A^T , tr(A) , A[jk] , A[11]+A[22] , A[11]+A[12]+A[21]+A[22]  , A[kk]];
+TorF: [is(1=1),is(1=0),is(1=1),is(1=0),is(1=1),is(1=0),is(1=1)];
+
+/* Used to randomise order of appearance in list */
+numb1: rand(4)*2+1;     /* First equation is always true, so pick odd number */
+numb2: rand_with_prohib(1,7,[numb1]);
+numb3: rand_with_prohib(1,7,[numb1,numb2]);
+numb4: rand_with_prohib(1,7,[numb1,numb2,numb3]);
+numb5: rand_with_prohib(1,7,[numb1,numb2,numb3,numb4]);
+numb6: rand_with_prohib(1,7,[numb1,numb2,numb3,numb4,numb5]);
+numb7: rand_with_prohib(1,7,[numb1,numb2,numb3,numb4,numb5,numb6]);
+
+/* Teacher Answers */
+ta: [TorF[numb2],TorF[numb3],TorF[numb4],TorF[numb5],TorF[numb6],TorF[numb7]];
+\end{lstlisting}
+\subsubsection{Question Text}
+Let \[ A = \left( \begin{matrix} A_{11} & A_{12} \\ A_{21} & A_{22} \end{matrix} \right) \] The expression \(@eq[numb1]@\) is written in Einstein summation convention in 2 dimensions for the matrix. For each of the following equations, select true if it is equivalent to this, and select false if it is not equivalent to this. Note that \(A^T\) denotes the transpose of the matrix \(A\), and \(tr(A)\) denotes the trace of \(A\).
+
+The following expressions are equivalent to \(@eq[numb1]@\). True or false?
+
+\( @eq[numb2]@ \)   [[input:ans1]][[validation:ans1]]
+
+\( @eq[numb3]@ \)   [[input:ans2]][[validation:ans2]]
+
+\( @eq[numb4]@ \)   [[input:ans3]][[validation:ans3]]
+
+\( @eq[numb5]@ \)   [[input:ans4]][[validation:ans4]]
+
+\( @eq[numb6]@ \)   [[input:ans5]][[validation:ans5]]
+
+\( @eq[numb7]@ \)   [[input:ans6]][[validation:ans6]][[feedback:prt1]]
+\subsubsection{Hint}
+Recall the definition of Einstein summation convention \begin{align*} A_{ii} = \sum_{i} A_{ii} \end{align*}
+\subsubsection{Model Solution}
+The expressions \begin{gather*} A_{jj} \\ A_{kk} \\ A_{11}+A_{22} \\ tr(A) \end{gather*} are all equivalent. Einstein summation convention means that the letter representing each index does not matter, hence the first and second expressions are equivalent, as \(j\) has been switched with \(k\). This summation means \begin{align*} A_{jj} = \sum_j A_{jj} = A_{11} + A_{22} \end{align*} and this is the definition of the trace of a matrix. Hence the third and fourth expressions are equivalent to this. The expressions \begin{gather*} A^{T} \\ A_{jk} \\ A_{11}+A_{12}+A_{21}+A_{22} \end{gather*} are not equivalent to the others. The transpose of \(A\) is a 2 by 2 matrix, not a scalar, so cannot be equivalent. The second expression is not a sum of the diagonal. And the last expression is a sum of all the entries, which is not a sum of the diagonal either.
+\subsubsection{Question Note}
+Select true and false as to which expressions are equivalent to @eq[numb1]@.
+
+\end{document}
